@@ -35,10 +35,14 @@ module.exports = (sequelize, DataTypes) => {
   };
   transactions.init({
     status: DataTypes.STRING,
+    name: DataTypes.STRING,
+    email: DataTypes.STRING,
+    phone: DataTypes.STRING,
+    attachment: DataTypes.STRING,
+    address: DataTypes.STRING,
     sellerId: DataTypes.INTEGER,
     buyerId: DataTypes.INTEGER,
-    price: DataTypes.INTEGER,
-    address: DataTypes.STRING
+    price: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'transactions',

@@ -8,6 +8,21 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      name: {
+        type: Sequelize.STRING
+      },
+      email: {
+        type: Sequelize.STRING
+      },
+      phone: {
+        type: Sequelize.STRING
+      },
+      address: {
+        type: Sequelize.STRING
+      },
+      attachment: {
+        type: Sequelize.STRING
+      },
       sellerId: {
         type: Sequelize.INTEGER,
         references: {
@@ -35,9 +50,6 @@ module.exports = {
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
-      },
-      address: {
-        type: Sequelize.STRING
       },
       updatedAt: {
         allowNull: false,
