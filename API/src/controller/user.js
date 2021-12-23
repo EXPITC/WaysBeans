@@ -131,12 +131,13 @@ exports.profileMe = async (req, res) => {
 }
 exports.updateUser = async (req, res) => {
     try {
+        console.log('from update')
         const { id } = req.user
         const data = req.body
+        console.log(data)
         const img = await users.findOne({
             where: {id}
         })
-        console.log(id)
         console.log(img)
         const fs = require('fs')
         const path = `./uploads/img/${img.image}`

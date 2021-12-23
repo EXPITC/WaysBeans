@@ -1,11 +1,10 @@
 import styled from 'styled-components';
 
 export const WrapperYellow = styled.div`
-    top: 0;
     width: 100%;
-    height:558px;
+    height: 91px;
     position: relative;
-    background: #FFC700;
+    background: #F5F5F5;
     display:flex;
     justify-content: center;
     animation: apprears 1s ease-in forwards;
@@ -16,6 +15,7 @@ export const WrapperYellow = styled.div`
             opacity:1;
         }
     };
+    box-shadow: 0px 10px 30px 0px #00000040;
 `
 export const Polyy = styled.div`
     position:absolute;
@@ -46,7 +46,6 @@ export const Polyy = styled.div`
 `
 export const OneLineFlexTop = styled.div`
    @import url('https://fonts.googleapis.com/css2?family=Shippori+Antique+B1&display=swap');
-    padding-top: 27px;
     margin-bottom: 10px;
     padding-left:4%;
     padding-right:4%;
@@ -100,13 +99,23 @@ export const OneLineFlexTop = styled.div`
         }
     }
     } */
+    .login {
+        background: none !important;
+        border: 2px solid #613D2B;
+        color: #433434;
+        &:hover {
+            border: 2px solid #433434;
+            color: white;
+            background: #613D2B !important;
+        }
+    }
     button {
         width: 100px;
         height: 30px;
-        background: #433434;
+        background: #613D2B;
         border-radius: 5px;
         margin-left: 16px;
-        border:0px;
+        border: 2px solid #613D2B
         font-size:var(--FontSmall);
         color:white;
         font-weight: bold;
@@ -196,6 +205,7 @@ export const WrapFlex2 = styled.div`
     }
 `
 export const WrapFlex3 = styled.div`
+   
     display:flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -241,33 +251,42 @@ export const CardResto = styled.div`
         margin-left: 16px;
     }
 `
-export const CardNear = styled.div`
-    width: 245px;
-    height: 221px;
-    background: #FFFFFF;
+export const Banner = styled.img` 
+    width:100%;
+    margin-top:40px;
+`
+export const Card = styled.div`
+    width: 241px;
+    height: 410px;
+    background: #F6E6DA;
     border-radius: 5px;
     display:flex;
     flex-direction: column;
-    padding: 10px;
+    overflow: hidden;
+   cursor: pointer;
     p {
         font-family: 'serif';
         font-style: normal;
         font-weight: normal;
         font-size: 14px;
-        color:black;
-        margin-top: 6px;
+        color: #974A4A;
+        padding-left: 10px;
+        margin:0px;
+        margin-bottom:5px;
     }
     h3 {
+        padding-left: 10px;
         margin-top:14px;
-        margin-bottom: 0;
+        color: #613D2B;
+        margin-bottom:14px;
         font-family: 'Abhaya Libre ExtraBold';
-        font-style: normal;
+        font-style: bold;
         font-size: 18px;
     }
     img {
         background: #222;
-        width: 224px;
-        height: 134px;
+        width: 241px;
+        height: 312px;
         margin-bottom: 0;
     }
 `

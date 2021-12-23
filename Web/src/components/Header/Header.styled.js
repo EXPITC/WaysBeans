@@ -4,12 +4,13 @@ import styled from 'styled-components';
 export const Head = styled.div`
     position:sticky;
     top:0;
-    background:var(--mainYellow);
+    background: #F5F5F5;
     height: 91px;
     .drop{
         position:absolute!important;
         right:10px !important;
     }
+    box-shadow: 0px 10px 30px 0px #00000040;
 `
 export const TopFlex = styled.div`
     /* border:1px solid black; */

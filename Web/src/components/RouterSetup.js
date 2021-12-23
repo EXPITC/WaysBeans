@@ -11,8 +11,9 @@ import CartPage from './CartPage';
 import AddProduct from './AddProduct';
 import LandingPage from './LandingPage';
 import Header from './Header';
-import Resto from './Resto';
-import AddResto from './AddResto'
+import Checkout from './Checkout';
+import DetailTrans from './detailTrans';
+
 import {API,setAuthToken, handleError} from '../config/api'
 import { UserContext } from '../Context/userContext';
 
@@ -48,17 +49,17 @@ const RouterSetup = () => {
              <Route path="/Profile" element={<ProfilePage/>}/>
              <Route path="/Edit/Profile" element={<EditProfile/>}/>
              {/* <Route path="/DetailResto/:id" element={<DetailPage/>}/> */}
-             <Route path="/Resto/:id" element={<DetailPage/>}/>
+             <Route path="/Detail/:id" element={<DetailPage/>}/>
               {isOwner ?
                 <>
                 <Route path="/Transaction" element={<TransactionPage/>}/>
                 <Route path="/Add-Product" element={<AddProduct />}/>
-                <Route path="/Resto" element={<AddResto/>}/>
                 </>
                 :
                 <>
-                <Route path="/Resto" element={<Resto/>}/>
                 <Route exact path="/Cart" element={<CartPage/>} />
+                <Route exact path="/Transaction/detail/:id" element={<DetailTrans/>} />
+                <Route exact path="/Cart/Checkout" element={<Checkout/>} />
                 </>
               }
              </>

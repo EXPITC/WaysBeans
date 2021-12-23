@@ -42,7 +42,7 @@ const TransactionPage = () => {
         return () => {
             socket.disconnect()
         }
-    }, [transaction])
+    }, [])
     
     const Approve = (x) => {
         socket.emit('otw')

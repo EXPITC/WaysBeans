@@ -1,17 +1,19 @@
 import { React ,useContext, useState ,useEffect } from 'react';
-import {Link} from 'react-router-dom'
+import {Link ,useNavigate} from 'react-router-dom'
 import { UserContext } from '../../Context/userContext'
 import { API , handleError} from '../../config/api';
 import {io} from 'socket.io-client'
 import convertRupiah from 'rupiah-format'
+import Barcode from './barcode';
 
 import Header from '../Header'
 import Icon from '../../img/Icon.svg'
-import { Wrapper ,FlexCollum, Flex ,Pp , Buttons} from './ProfilePage.styled';
+import { Wrapper ,FlexCollum,TextW, Flex ,Pp ,Pp2, ButtonsC ,ButtonsComp, ButtonsW ,ButtonsS,Preview ,Spliter} from './ProfilePage.styled';
 
 let socket;
-const ProfilePage = () => {
 
+const ProfilePage = () => {
+    const navigate = useNavigate();
     const { state, dispatch } = useContext(UserContext)
     const { user } = state
     let isOwner = false
@@ -50,10 +52,10 @@ const ProfilePage = () => {
     socket.on('connect', () => {
       console.log(socket);
     })
-    socket.on('new transaction' , ()=>{
-        socket.emit("load transaction",state.user.id)
+    socket.on('new transactions' , ()=>{
+        loadTrans()
     })
-    socket.emit("load transaction",state.user.id)
+    socket.emit("loadTransaction",state.user.id)
     loadTrans()
     socket.on("connect_error", (err) => {
         console.error(err.message); 
@@ -61,15 +63,60 @@ const ProfilePage = () => {
     return () => {
         socket.disconnect()
     }
-   }, [historyTransaction])
-    
+   }, [])
     const loadTrans = () => {
-        socket.emit("load transaction",state.user.id)
+        socket.emit("loadTransaction",state.user.id)
         socket.on("transaction", (data) => {
             setHistoryTransaction(data)
+            console.log(data)
         })
     }
-
+    const check = (state,x) => {
+        let y = x.split('T')[0]
+        let z = y.split('-')
+        console.log(z)
+        switch (state) {
+            case 'day': 
+                return (new Date(z[0], z[1], z[2]).toLocaleString('en-us', { weekday: 'long' }))
+            case 'month': 
+                return (new Date(z[0], z[1] - 1, z[2]).toLocaleString('en-us', { month: 'long' }))
+            case 'oneDay':
+                return z[2]
+            case 'year':
+                return z[0]
+        }
+        
+    }
+    const [pre, setPre] = useState(user?.image)
+    const [form, setForm] = useState({
+        image:''
+    })
+    const handleChange = async (e) => {
+        try {
+        setForm({
+            image: e.target.files
+        })
+        setPre(URL.createObjectURL(e.target.files[0]));
+        console.log(form)
+            const config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            }
+            const formData = new FormData();
+            formData.set("image", form?.image[0], form?.image[0]?.name);
+            console.log(formData)
+            console.log(await API.patch('/user', formData, config))
+            const response = await API.get('/login')
+            await dispatch({
+                status: 'login',
+                payload: response.data
+            })
+        } catch (err) {
+            handleError(err)
+        }
+    }
+   console.log(historyTransaction)
     return (
         <>
             <Header/>
@@ -78,10 +125,10 @@ const ProfilePage = () => {
                     <h1>{data[0].title1}</h1>
                     <Flex>
                         <FlexCollum>
-                            <img className="img" src={user.image}alt={data[0].img}/>
-                            <Link to="/Edit/Profile">
-                            <button>Edit Profile</button>
-                            </Link>
+                        <label className="second" htmlFor='imgFile'>
+                            <img className="img" src={pre}alt={data[0].img}/>
+                            <input type="file" name='image' id= "imgFile" hidden onChange={handleChange}/>
+                        </label>
                         </FlexCollum>
                         <FlexCollum className="h">
                             <div>
@@ -92,43 +139,72 @@ const ProfilePage = () => {
                                 <Pp b c>Email</Pp>
                                 <Pp>{user.email}</Pp>
                             </div>
-                            <div>
-                                <Pp b c>Phone</Pp>
-                                <Pp>{user.phone}</Pp>
-                            </div>
                         </FlexCollum>
                     </Flex>
                 </FlexCollum>
                 <FlexCollum>
                     <h1>{data[0].title2}</h1>
                     {/* Loop */}
-                    {historyTransaction.map((x) => {
-                        return (
+                    {historyTransaction.map((x) => 
                         <>
-                        <Flex w>
-                        <FlexCollum btwn>
-                            <div>
-                                {isOwner? <Pp ft b>{x.buyer.fullname}</Pp> : <Pp ft b>{x.seller.restos.title}</Pp> }
-                                <Pp n b>Saturday, </Pp>
-                                <Pp n a>12 March 2021</Pp>
-                            </div>
-                            <Pp bb b>Total : {convertRupiah.convert(x.price)}</Pp>
-                        </FlexCollum>
-                        {x.status === 'Cancel' ?
-                        <FlexCollum  btwn c >
-                              <img src={Icon} />
-                              <Buttons c red>{x.status}</Buttons>
-                        </FlexCollum> :
-                        <FlexCollum  btwn i >
-                              <img src={Icon} />
-                              <Buttons>{x.status}</Buttons>
-                        </FlexCollum> 
-                        
+                        {
+                            x.product.map((y) => {
+                                return (
+                                    <Flex w onClick={() => { navigate(`/Transaction/detail/${x.id}`) }} key={x.id}>
+                                    <Spliter>
+                                    <Preview src={y.img}/>
+                                    <FlexCollum >
+                                        <div className={'split'}>
+                                            <h1> {y.title}</h1>
+                                            <Pp2 n b>{check('day',y.order.createdAt)} </Pp2>
+                                            <Pp2 n a>{check('oneDay',y.order.createdAt)} ,{check('month',y.order.createdAt)} ,{check('year',y.order.createdAt)}</Pp2>
+                                        </div>
+                                        <Pp2 >Price : {y.price}</Pp2>
+                                        <Pp2 >Qty : {y.order.qty}</Pp2>
+                                        <Pp2 bb b>Sub Total : {convertRupiah.convert(y.price * y.order.qty)}</Pp2>
+                                    </FlexCollum>
+                                    </Spliter>
+                                    {x.status === 'Cancel' ?
+                                    <FlexCollum  btwn i c t>
+                                        <img src={Icon} className={'icon'}/>
+                                        <Barcode src={x.status}/>
+                                        <ButtonsC c red>{x.status}</ButtonsC>
+                                    </FlexCollum> : null
+                                    }
+                                    {
+                                        x.status === 'Waiting Approve' ?
+                                        <FlexCollum  btwn i c t >
+                                            <img src={Icon} className={'icon'}/>
+                                            <Barcode src={x.status}/>
+                                            <ButtonsW w><TextW >{x.status}</TextW></ButtonsW>
+                                        </FlexCollum> 
+                                        :null
+                                    }
+                                    {
+                                        x.status === 'Complete' ?
+                                            <FlexCollum  btwn i t c>
+                                            <img src={Icon} className={'icon'}/>
+                                            <Barcode src={x.status}/>
+                                            <ButtonsComp>{x.status}</ButtonsComp>
+                                        </FlexCollum> 
+                                        :null
+                                        }
+                                     {
+                                        x.status === 'Succes' ?
+                                            <FlexCollum  btwn i t c>
+                                            <img src={Icon} className={'icon'}/>
+                                            <Barcode src={x.status}/>
+                                            <ButtonsS>{x.status}</ButtonsS>
+                                        </FlexCollum> 
+                                        :null
+                                    }
+                                    </Flex>
+                                )
+                            })
                         }
-                        </Flex>
+                        
                         </>
-                        )
-                    })}
+                    )}
                 </FlexCollum>
             </Wrapper>
         </>

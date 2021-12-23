@@ -2,8 +2,6 @@ import { React ,useState, useContext ,useEffect} from 'react';
 
 import Header from '../Header';
 import Clip from '../../img/clip.svg'
-import map from '../../img/map.svg'
-import Map from '../Map'
 import { Wrapper, WrapperMain, Flex } from './EditProfile.styled'
 import { API ,handleError } from '../../config/api'
 import axios from 'axios'
@@ -36,24 +34,6 @@ const EditProfile = ({ U }) => {
     })
 
     const [response, setResponse] = useState(null)
-    const [loc, setLoc] = useState(user.location?.split(' '))
-   
-    useEffect(() => {
-        if (loc) {
-            try {
-                axios.get(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${loc[0]}&lon=${loc[1]}`)
-                    .then((res) => { setResponse(res.data) })
-                    setForm({
-                        ...form,
-                        location: loc[0]+' '+loc[1]
-                    })
-            } catch (err) {
-                console.log(err)
-            }         
-        }
-    }, [loc])
-    
-
     const handleChange = (e) => {
         setForm({
             ...form,
@@ -105,7 +85,6 @@ const EditProfile = ({ U }) => {
     }
     return (
         <>
-            {showMap ? <Map toggle={toggle} setLocEdit={setLoc}/>: null}
             <Header noTroll />
             <Wrapper>
                 <h1 >{data[0].Title1}</h1>
@@ -148,7 +127,6 @@ const EditProfile = ({ U }) => {
                             value={response?.display_name}
                             />
                         <button className="secondbtn" onClick={toggle}>Select On Map
-                            <img src={map}/>
                         </button>
                     </Flex>
                 <WrapperMain>

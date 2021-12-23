@@ -1,4 +1,4 @@
-const { transactions ,users , products , order ,resto} = require('../../models')
+const { transactions ,users , products , order} = require('../../models')
 const Op = require('Sequelize').Op;
 const { userCheck, admin, owner } = require('../middleware/userCheck')
 const jwt = require('jsonwebtoken');
@@ -14,11 +14,11 @@ const socketIo = (io) => {
   io.on('connection', (socket) => {
     console.log('client connect:', socket.id)
 
-    socket.on('load transaction', async (payload) => {
+    socket.on('loadTransaction', async (payload) => {
       try {
         const token = socket.handshake.auth.token
 
-        // console.log(payload)
+        console.log(payload)
         
         const verified = jwt.verify(token, process.env.JWT_TOKEN )
         // console.log('verified.id')
@@ -28,10 +28,7 @@ const socketIo = (io) => {
             [Op.or]: [
               {buyerId: payload},
               {sellerId: payload}
-            ],
-            status: {
-              [Op.or] : ['Success','Cancel']
-            }
+            ]
           },
           include: [
               {
@@ -42,22 +39,39 @@ const socketIo = (io) => {
                   }
             },
             {
+              model: products,
+              as: 'product',
+              through: {
+                  model: order
+              },
+              attributes: {
+                  exclude: ['createdAt','updatedAt']
+              }
+            },
+            {
               model: users,
               as: "seller",
               attributes: {
                   exclude: ['password','createdAt','updatedAt']
-              },include: {
-                model: resto,
-                as: 'restos',
-                attributes: {
-                    exclude: ['ownerId','createdAt','updatedAt']
-                }
               }
           } 
           ],
           order: [['createdAt', 'DESC']]
         })
-        // console.log(data)
+        const path = 'http://localhost:5000/img/'
+        data = JSON.parse(JSON.stringify(data))
+        data = data.map(x => {
+            return {
+                ...x,
+                product: x.product.map(x => {
+                    return {
+                        ...x,
+                        img: path + x.img
+                    }
+                })
+               
+            }
+        })
         socket.emit("transaction", data)
       } catch (err) {
         console.log(err.message)

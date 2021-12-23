@@ -23,12 +23,6 @@ module.exports = (sequelize, DataTypes) => {
           name: 'id'
         }
       })
-      users.hasOne(models.resto, {
-        as: 'restos',
-        foreignKey: {
-          name: 'ownerId'
-        }
-      })
     }
   };
   users.init({

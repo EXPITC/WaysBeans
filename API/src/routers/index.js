@@ -20,7 +20,6 @@ const {
     updateUser,
     updateUserData,
     deleteUser,
-    getUserRestos,
     profileMe
 } = require('../controller/user')
 
@@ -29,7 +28,6 @@ router.get('/profile', userCheck, profileMe)
 router.post('/user', uploadImg('image'), addUser)
 router.get('/users', getUsers)
 router.get('/user/:id', getUser)
-router.get('/user/resto/:id', getUserRestos)
 router.patch('/user', userCheck,  uploadImg('image'), updateUser)
 router.patch('/userData', userCheck, updateUserData)
 router.delete('/user/:id', deleteUser)
@@ -48,29 +46,10 @@ const {
 router.post('/add/product/',userCheck, owner, uploadImg('image'), addProduct)
 router.get('/products', userCheck, owner,getProducts)
 router.get('/products/all', getProductsAll)
-router.get('/product/:id',  userCheck, owner,getProduct)
+router.get('/product/:id',  getProduct)
 router.patch('/product/:id', userCheck, owner,editProduct)
 router.delete('/product/:id', userCheck, owner,deleteProduct)
 
-// resto
-// TODO: add resto , get resto{ +owner } , edit resto , delete resto
-const {
-    addResto,
-    getRestos,
-    getResto,
-    editResto,
-    deleteResto,
-    getRestoId,
-    getRestoUser
-} = require('../controller/resto')
-
-router.post('/add/resto', userCheck, owner, uploadImg('img'), addResto)
-router.get('/resto/:id', getRestoId)
-router.get('/last/resto/:id', getRestoUser)
-router.get('/restos',  getRestos) 
-router.get('/resto/', userCheck, owner, getResto)
-router.patch('/resto/', userCheck, owner,editResto)
-router.delete('/resto/',userCheck, owner, deleteResto)
 
 // transaction
 // TODO: add transaction , get transactions, get transactions of id , get transaction , delete transaction.
@@ -93,7 +72,7 @@ router.get('/transactions', userCheck ,getTransactions)
 router.get('/transaction/active', userCheck ,getTransactionActive)
 router.get('/transactions/admin', userCheck ,admin,getTransactionsAdmin)
 router.get('/transactionby/:id', userCheck, getTransaction)
-router.patch('/transaction/:id',userCheck, editTransaction)
+router.patch('/transaction/:id',userCheck,  uploadImg('image'), editTransaction)
 router.delete('/transaction/:id', userCheck ,deleteTransaction)
 
 //order

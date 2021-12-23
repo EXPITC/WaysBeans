@@ -337,11 +337,9 @@ exports.getTransactionsAdmin = async (req, res) => {
 exports.getTransaction = async (req, res) => {
     try {
         const { id } = req.params
-        const buyerId = req.user.id
-        const data = await transactions.findOne({
+        let data = await transactions.findAll({
             where: {
-                id: id,
-                buyerId: buyerId
+                id
             },
             include: [
                 {
@@ -355,7 +353,10 @@ exports.getTransaction = async (req, res) => {
                     model: products,
                     as: 'product',
                     through: {
-                        model: order
+                        model: order,
+                        attributes: {
+                            include: ['id']
+                        }
                     },
                     attributes: {
                         exclude: ['createdAt','updatedAt']
@@ -370,19 +371,37 @@ exports.getTransaction = async (req, res) => {
                 }
             ],
             attributes: {
-                exclude: ['sellerId', 'buyerId', 'productId', 'price','createdAt', 'updatedAt']
+                exclude: ['createdAt', 'updatedAt']
             }
         })
-        const total = await order.count({
-            where: {
-                transactionId: id
+        const path = 'http://localhost:5000/img/'
+        data = JSON.parse(JSON.stringify(data))
+        let product = data.map(x => {
+            return {
+                product: x.product.map(x => {
+                    return {
+                        ...x,
+                        img: path + x.img
+                    }
+                })
+               
+            }
+        })
+        product = product[0].product.map(x => {
+            return {
+                ...x
+            }
+        })
+        data = data.map(x => {
+            return {
+                ...x,
+                product
             }
         })
         res.status(200).send({
             message: 'Success',
             data: {
-                transactions: data,
-                total
+                transactions: data
             }
         })
     } catch (err) {
@@ -396,11 +415,9 @@ exports.getTransaction = async (req, res) => {
 exports.editTransaction = async (req, res) => {
     try {
         const { id } = req.params
-        const buyerId = req.user.id
         const transactionData = await transactions.findOne({
             where: {
-                id,
-                buyerId: buyerId
+                id
             },
         })
         if (!transactionData) {
@@ -413,7 +430,10 @@ exports.editTransaction = async (req, res) => {
             })
         }
         const data = req.body
-        await transactions.update(data, {
+        await transactions.update({
+            ...data,
+            attachment : req.file.filename
+        }, {
             where: {id}
         })
         res.send({

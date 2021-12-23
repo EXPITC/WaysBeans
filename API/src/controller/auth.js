@@ -11,10 +11,6 @@ exports.register = async (req, res) => {
         email: joi.string().email().required(),
         password: joi.string().min(4).required(),
         fullname: joi.string().min(3).required(),
-        role: joi.string().required(),
-        phone: joi.string().optional(),
-        gender: joi.string().optional(),
-        location: joi.string().optional(),
         image: joi.string().optional(),
     })
     const { error } = schema.validate(req.body);
@@ -43,10 +39,7 @@ exports.register = async (req, res) => {
             fullname: req.body.fullname ,
             email:  email,
             password:  hashPass,
-            role:  req.body.role,
-            gender:  req.body.gender,
-            phone:  req.body.phone,
-            location:  req.body.location,
+            role: 'costumer',
             image: 'LOFI.jpg' ,
         })
 
@@ -57,7 +50,7 @@ exports.register = async (req, res) => {
             id: valid.id,
             status: valid.role
         }
-        const {role,id ,location,phone ,image} = valid
+        const {role,id ,image} = valid
         const token = jwt.sign(userData,process.env.JWT_TOKEN)
         
         res.status(200).send({
@@ -70,8 +63,6 @@ exports.register = async (req, res) => {
                     id,
                     role,
                     token,
-                    location,
-                    phone,
                     image: path + image
                 }
             },
@@ -117,7 +108,7 @@ exports.login = async (req, res) => {
                 message: 'email or password wrong'
             })
         }
-        const { id, fullname ,role ,location,phone,image} = userAcc
+        const { id, fullname ,role ,image} = userAcc
         const userData = {
             id,
             status: userAcc.role
@@ -132,8 +123,6 @@ exports.login = async (req, res) => {
             fullname,
             email,
             token,
-            location,
-            phone,
             image: path + image
         })
 
@@ -151,7 +140,7 @@ exports.auth = async (req, res) => {
         const userAcc = await users.findOne({
             where: {id}
         })
-        const { fullname, role, email ,location,phone ,image} = userAcc
+        const { fullname, role, email ,image} = userAcc
         const userData = {
             id,
             status: userAcc.role
@@ -166,8 +155,6 @@ exports.auth = async (req, res) => {
             fullname,
             email,
             token,
-            location,
-            phone,
             image: path + image
         })
     } catch (err) {

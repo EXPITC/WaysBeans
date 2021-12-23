@@ -5,7 +5,7 @@ export const Bg = styled.div`
      width: 100%;
      height: 100%;
      position: fixed;
-     display: flex;
+
      justify-content: center;
      align-items: center;
      animation: anibg 1s linear forwards;
@@ -19,21 +19,80 @@ export const Bg = styled.div`
 `
 export const Wrapper = styled.div`
     display:  ${props => (props.active === true? 'none' : 'block')};
-    /* justify-content: center;
-    align-items: center; */
+    justify-content: center;
+    align-items: center;
     position: fixed;
-    background: none;
-    z-index: 1000;
+    background: white;
+    z-index: 998;
     /* border:1px solid black; */
-    animation: regAni 0.5s ease-out forwards;
-        @keyframes regAni {
-            from{
-                top:80%;
-            }to {
-                top:5%;
-            }
+    border-radius: 100;
+    width: 100vw;
+    height: 100vh;
+    background:none;
+
+    .singup-cointainer {
+        animation: ani 0.6s ease-out forwards;
+        transition: 0.6s ease-out;
+        background:#ffff;
+        /* border:1px solid red; */
+        /* background-position: 50%; */
+        /* transform: skewY(-50%); */
+        display: flex;
+        width: 416px;
+        height: 450px;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: sticky;
+        margin:0 auto;
+        margin-top:50%;
+        border-radius: 10px;
+        @keyframes ani {
+        0% {
+            margin-top:50%;
         }
-    
+        100% {
+            margin-top:10%;
+        }
+    }
+        /* top: 0; */
+        /* margin: 10px solid black; */
+    }
+    form {
+        /* border:1px solid black; */
+        display: flex;
+        flex-direction: column;
+        width: 90%;
+        /* margin-top: 30%; */
+        justify-self: center;
+        align-items: center;
+        position: sticky;
+        gap:0.3rem;
+    }
+    form input {
+        @import url('https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@800&family=Shippori+Antique+B1&display=swap');
+        font-family: 'Shippori Antique B1', sans-serif;
+        margin-bottom: 20px;
+        /* background-color: transparent; */
+        display: block;
+        max-width: 350px;
+        width: 100%;
+        height: 50px;
+        background: rgba(97, 61, 43, 0.25);
+        border: 2px solid #D2D2D2;
+        border-radius: 5px;
+        padding-left: 5px;
+        border: 2px solid  #613D2B;
+        color: #613D2B
+    }
+
+    form input::placeholder {
+        @import url('https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@800&family=Shippori+Antique+B1&display=swap');
+        font-family: 'Shippori Antique B1', sans-serif;
+        text-align: left;
+        color: #613D2B;
+        font-size: 18px;
+    }
     h2 {
         @import url('https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@800&family=Shippori+Antique+B1&display=swap');
         font-family: 'Shippori Antique B1', sans-serif;
@@ -41,176 +100,37 @@ export const Wrapper = styled.div`
         font-weight: 900;
         font-size: 36px;
         line-height: 49px;
-        margin-right: 40%;
-        color: #FFC700;
+        margin-right: 180px;
+        color: #613D2B;
     }
-    @media only screen and (max-width:1450px) {
-        h2 {
-        @import url('https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@800&family=Shippori+Antique+B1&display=swap');
-        font-family: 'Shippori Antique B1', sans-serif;
-        font-style: normal;
-        font-weight: 900;
-        margin-top:60px;
-        font-size: 36px;
-        line-height: 19px;
-        margin-right: 40%;
-        color: #FFC700;
-        }
-            .singup2-cointainer {
-            background:white;
-            display: flex;
-            width: 416px;
-            height: 584px;
-            border-radius: 10px;
-            flex-direction: column;
-            align-items: center;
-            border:1px solid green;
-            flex-wrap: wrap;
-        
-            /* margin: 10px solid black; */
-        }
-            form {
-            @import url('https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@800&family=Shippori+Antique+B1&display=swap');
-            font-family: 'Shippori Antique B1', sans-serif;
-            height: 284% !important;
-            /* overflow: auto; */
-            /* gap: 1rem */
-            width: 80%;
-            justify-self: center;
-            align-items: center;
-            position: sticky;
-            
-            /* border:1px solid black; */
-        }
-        form input {
-            @import url('https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@800&family=Shippori+Antique+B1&display=swap');
-            font-family: 'Shippori Antique B1', sans-serif;
-            margin-bottom: 10px;
-            background-color: transparent;
-            display: block;
-            width: 100%;
-            background: rgba(210, 210, 210, 0.25);
-            border: 2px solid #D2D2D2;
-            border-radius: 5px;
-            height: 50px !important;
-            padding-left: 5px;
-            outline: none;
-            color: black;
-        }
-        form select {
-            @import url('https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@800&family=Shippori+Antique+B1&display=swap');
-            font-family: 'Shippori Antique B1', sans-serif;
-            margin-bottom: 10px;
-            background-color: transparent;
-            display: block;
-            width: 100%;
-            background: rgba(210, 210, 210, 0.25);
-            border: 2px solid #D2D2D2;
-            border-radius: 5px;
-            height: 50px;
-            padding-left: 5px;
-            outline: none;
-            color: #B1B1B1;
-            text-align: left;
-            text-align-last: left;
-        }
-    }
-    p {
-                margin-top:0px;
-                text-align: center;
-        }
-    @media only screen and (min-width:1451px) {
-        .singup2-cointainer {
-        background:white;
-        display: flex;
-        width: 416px;
-        height: 694px;
-        border-radius: 10px;
-        flex-direction: column;
-        align-items: center;
-       
-        /* margin: 10px solid black; */
-    }
-        form {
-                /* @import url('https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@800&family=Shippori+Antique+B1&display=swap'); */
-                /* font-family: 'Shippori Antique B1', sans-serif; */
-                /* display: flex; */
-                /* flex-direction: column; */
-                /* margin-top: 5%; */
-                /* height: 444px; */
-                /* gap: 1rem */
-                width: 80% !important;
-                /* justify-self: center; */
-                /* align-items: center; */
-                /* position: sticky; */
-                
-                /* border:1px solid black; */
-            }
-        form input {
-            @import url('https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@800&family=Shippori+Antique+B1&display=swap');
-            font-family: 'Shippori Antique B1', sans-serif;
-            margin-bottom: 30px;
-            background-color: transparent;
-            display: block;
-            width: 100%;
-            background: rgba(210, 210, 210, 0.25);
-            border: 2px solid #D2D2D2;
-            border-radius: 5px;
-            height: 50px !important;
-            padding-left: 5px;
-            outline: none;
-            color: black;
-        }
-        form select {
-            @import url('https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@800&family=Shippori+Antique+B1&display=swap');
-            font-family: 'Shippori Antique B1', sans-serif;
-            margin-bottom: 20px;
-            background-color: transparent;
-            display: block;
-            width: 100%;
-            background: rgba(210, 210, 210, 0.25);
-            border: 2px solid #D2D2D2;
-            border-radius: 5px;
-            height: 50px;
-            padding-left: 5px;
-            outline: none;
-            color: #B1B1B1;
-            text-align: center;
-            text-align-last: center;
-        }
-    }
-    form input::placeholder {
-        @import url('https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@800&family=Shippori+Antique+B1&display=swap');
-        font-family: 'Shippori Antique B1', sans-serif;
-        text-align: left;
-        color: #B1B1B1;
-    }
-    .singup2-cointainer .x-button-singup2{
+    .singup-cointainer .x-button-singup2{
         cursor: pointer;
         /* filter: brightness(0) invert(1); */
         width: 5%;
-        top: 3%;
-        right: 3%;
+        top: 2.5%;
+        right: 5px;
         position: absolute;
         transform: translateZ(999);
     }
-    .singup2-cointainer .already-have-acc {
-        padding-top: 10px;
-        color: #B1B1B1;
+    .singup-cointainer .dont-have-acc {
+        padding-top: 0px;
+        color: black;
         cursor: default;
     }
-    .singup2-cointainer .login-here{
-        font-weight:bold;
-        color:#B1B1B1 !important;
+    .singup-cointainer form .dont-have-acc .login-here {
+        color: black !important;
         cursor: pointer;
+        font-weight: bold;
     }
-    .singup2-cointainer button {
+    .singup-cointainer button {
+        
         margin-top: 3%;
+        margin-bottom: 0px;
         width: 20vw;
     }
 
-    .singup2-cointainer button  {
-    background: #433434;
+    .singup-cointainer button  {
+    background: #613D2B;
     border: 1px solid #433434;
     border-radius: 6px;
     box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 4px;
@@ -221,10 +141,10 @@ export const Wrapper = styled.div`
     font-family: nunito,roboto,proxima-nova,"proxima nova",sans-serif;
     font-size: 16px;
     font-weight: 800;
+    width:95%;
     line-height: 16px;
     min-height: 40px;
     outline: 0;
-    width: 100%;
     padding: 12px 14px;
     text-align: center;
     text-rendering: geometricprecision;
@@ -235,13 +155,13 @@ export const Wrapper = styled.div`
     vertical-align: middle;
     }
 
-    .singup2-cointainer button:hover, .singup2-cointainer button:active {
+    .singup-cointainer button:hover, .singup .singup-cointainer button:active {
     background-color: initial;
     background-position: 0 0;
     color: #433434;
     }
 
-    .singup2-cointainer button:active {
+    .singup-cointainer button:active {
     opacity: .5;
     }
 `

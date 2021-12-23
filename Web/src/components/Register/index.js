@@ -16,11 +16,7 @@ const Register = ({ showR , Cancel , toggle , RegisterSwitch ,}) => {
     const [Form, setForm] = useState({
         email: '',
         password: '',
-        fullname: '',
-        gender: '',
-        phone: '',
-        role: '',
-
+        fullname: ''
     })
     const handelChange = (e) => {
         setForm({
@@ -61,34 +57,23 @@ const Register = ({ showR , Cancel , toggle , RegisterSwitch ,}) => {
         }
     }
     return (
+        <>
         <Bg>
         <Wrapper active={activeR}>
-           <div class="singup2-cointainer">
-                <img class="x-button-singup2" onClick={Cancel} src={Xbtns} alt=""/>
-                <form >
-                    <h2>Register</h2>
-                    <input type="email" name="email" placeholder="Email" onChange={handelChange}/>
-                    <input type="password" name="password" placeholder="Password" onChange={handelChange}/>
-                    <input type="text" name="fullname" placeholder="Full Name" onChange={handelChange}/>
-                    <select id="Gender" name="gender" onChange={handelChange}>
-                        <option hidden>Select Gender</option>
-                        <option value="Gender" disabled>Gender</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                    </select>
-                    <input type="number" name="phone" placeholder="Phone Number" onChange={handelChange}/>
-                    <select id="role" name="role" onChange={handelChange}>
-                        <option hidden >As User</option>
-                        <option value="As User" disabled >As User</option>
-                        <option value="costumer">Costumer</option>
-                        <option value="owner">Owner</option>
-                    </select>
-                    <button class="btnsingup2" onClick={handelSubmit}>SINGUP</button>
-                    <p class="already-have-acc">Already have an account ?  <span class="login-here" onClick={toggle}>Klik Here</span></p>
-                </form>
-            </div>
+        <div className="singup-cointainer">
+                    <img className="x-button-singup2" onClick={Cancel} src={Xbtns} alt=""/>
+                <form action="">
+                        <h2>Register</h2>
+                        <input type="email" name="email" placeholder="email" onChange={handelChange}/>
+                        <input type="password" name="password" placeholder="password"  onChange={handelChange}/>
+                        <input type="text" name="fullname" placeholder="Full Name" onChange={handelChange}/>
+                        <button class="btnsingup2" onClick={handelSubmit}>SINGUP</button>
+                        <p class="dont-have-acc">Don't have an account ? Klik <span class="login-here" onClick={toggle}>Here</span></p>
+                    </form>
+                </div>
         </Wrapper>
         </Bg>
+        </>
     )
 }
 

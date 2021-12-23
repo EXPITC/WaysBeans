@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 
 const db = {};
 // after root should be password bcoz i don't have password so leave it empty
-const Sequelize = new Sequelize('foodways_api', 'root', {
+const Sequelize = new Sequelize('waysbeans_api', 'root', {
     host: 'localhost',
     dialect: 'mysql',
     logging: console.log,

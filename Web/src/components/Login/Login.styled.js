@@ -30,7 +30,6 @@ export const Wrapper = styled.div`
     height: 100vh;
     background:none;
 
-    
     .login-cointainer {
         animation: ani 0.6s ease-out forwards;
         transition: 0.6s ease-out;
@@ -79,18 +78,17 @@ export const Wrapper = styled.div`
         max-width: 350px;
         width: 100%;
         height: 50px;
-        background: rgba(210, 210, 210, 0.25);
-        border: 2px solid #D2D2D2;
+        background: rgba(97, 61, 43, 0.25);
         border-radius: 5px;
         padding-left: 5px;
-        outline: none;
-        color: #433434
+        border: 2px solid  #613D2B;
+        color: #613D2B
     }
     form input::placeholder {
         @import url('https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@800&family=Shippori+Antique+B1&display=swap');
         font-family: 'Shippori Antique B1', sans-serif;
         text-align: left;
-        color: #B1B1B1;
+        color: #613D2B;
         font-size: 18px;
     }
     h2 {
@@ -101,14 +99,14 @@ export const Wrapper = styled.div`
         font-size: 36px;
         line-height: 49px;
         margin-right: 65%;
-        color: #FFC700;
+        color: #613D2B;
     }
     .login-cointainer .x-button-login2{
         cursor: pointer;
         /* filter: brightness(0) invert(1); */
         width: 5%;
         top: 2.5%;
-        right: 3.5%;
+        right: 5px;
         position: absolute;
         transform: translateZ(999);
     }
@@ -117,8 +115,11 @@ export const Wrapper = styled.div`
         color: #B1B1B1;
         cursor: default;
     }
+    p {
+        color:black !important;
+    }
     .login-cointainer .singup-here {
-        color: #B1B1B1 !important;
+        color: black !important;
         cursor: pointer;
         font-weight: bold;
     }
@@ -130,7 +131,7 @@ export const Wrapper = styled.div`
     }
 
     .login-cointainer button  {
-    background: #433434;
+    background:#613D2B;
     border: 1px solid #433434;
     border-radius: 6px;
     box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 4px;

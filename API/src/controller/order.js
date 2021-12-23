@@ -30,6 +30,13 @@ exports.addOrder = async (req, res) => {
                     id : add.id
                 }
             })
+            await products.update({
+                stock: dataProduct.stock - qty
+            },{
+                where: {
+                    id : dataProduct.id
+                }
+            })
             await transactions.update({
                 price: qty * dataProduct.price + dataTransaction.price
             },
@@ -109,6 +116,7 @@ exports.orderCount = async (req, res) => {
         })
     }
 }
+
 exports.getOrders = async (req, res) => {
     try {
         const buyerId = req.user.id
@@ -255,6 +263,13 @@ exports.lessOrder = async (req, res) => {
                     id : less.id
                 }
             })
+            await products.update({
+                stock: dataProduct.stock + qty
+            },{
+                where: {
+                    id : dataProduct.id
+                }
+            })
             await transactions.update({
                 price: dataTransaction.price - qty * dataProduct.price 
             },
@@ -334,11 +349,19 @@ exports.deletedOrder = async (req, res) => {
         const dataTransaction = await transactions.findOne({
             where: { id: transactionId }
         })
+        
         await transactions.update({
             price: dataTransaction.price - qty * dataProduct.price 
         },
         {
             where: {id: transactionId}
+        })
+        await products.update({
+            stock: dataProduct.stock + qty
+        },{
+            where: {
+                id : dataProduct.id
+            }
         })
         await order.destroy({
             where: {id}

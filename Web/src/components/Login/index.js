@@ -38,7 +38,7 @@ const Login = ({ show, Cancel, toggle,}) => {
                 }
             }
             const body = JSON.stringify(Form)
-            const response = await API.post("/login", {username: 'expitc'}, config);
+            const response = await API.post("/login", body, config);
             console.log(response.data.role)
             if (response?.status === 200) {
                 dispatch({
@@ -67,7 +67,7 @@ const Login = ({ show, Cancel, toggle,}) => {
                         <input type="email" name="email" placeholder="email" onChange={handelChange}/>
                         <input type="password" name="password" placeholder="password"  onChange={handelChange}/>
                         <button class="btnlogin2" onClick={handelLogin}>LOGIN</button>
-                        <p class="dont-have-acc">Don't have an account ? <span class="singup-here" onClick={toggle}>Klik Here</span></p>
+                        <p class="dont-have-acc">Don't have an account ? Klik <span class="singup-here" onClick={toggle}>Here</span></p>
                     </form>
                 </div>
         </Wrapper>

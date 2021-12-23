@@ -44,7 +44,7 @@ exports.getProducts = async (req, res) => {
 
 exports.getProductsAll = async (req, res) => {
     try {
-        const data = await products.findAll({
+        let data = await products.findAll({
             include: {
                 model: users,
                 as: 'seller',
@@ -54,13 +54,22 @@ exports.getProductsAll = async (req, res) => {
             },
             attributes: {
                 exclude: ['sellerId','createdAt','updatedAt']
+            },
+            order: [
+                ['id', 'DESC']
+            ],
+        })
+        const path = 'http://localhost:5000/img/'
+        data = JSON.parse(JSON.stringify(data))
+        data = data.map(x => {
+            return {
+                ...x,
+                img: path + x.img
             }
         })
         res.status(200).send({
             status: 'success',
-            data: {
-                products: data
-            }
+            data : data
         })
         
     } catch (err) {
@@ -74,11 +83,9 @@ exports.getProductsAll = async (req, res) => {
 exports.getProduct = async (req, res) => {
     try {
         const { id } = req.params
-        const sellerId = req.user.id
-        const data = await products.findOne({
+        let data = await products.findOne({
             where: {
                 id,
-                sellerId: sellerId
             },
             include: {
                 model: users,
@@ -97,11 +104,17 @@ exports.getProduct = async (req, res) => {
                 message: 'product details not found'
             })
         }
+        const path = 'http://localhost:5000/img/'
+        data = JSON.parse(JSON.stringify(data))
+        data = [data].map(x => {
+            return {
+                ...x,
+                img: path + x.img
+            }
+        })
         res.status(200).send({
             status: 'success',
-            data: {
-                products: data
-            }
+            data
         })
         
     } catch (err) {
@@ -120,7 +133,6 @@ exports.addProduct = async (req, res) => {
             img: req.file.filename,
             sellerId: req.user.id
         })
-        
         res.status(200).send({
             status: 'success',
             message: 'products successfully added',

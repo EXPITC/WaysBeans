@@ -1,11 +1,11 @@
 {
   "name": "backend-foodways",
   "version": "1.0.0",
-  "description": "api for foodways",
+  "description": "api for waysbeans",
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
-    "client": "npm start --prefix ../foodways",
+    "client": "npm start --prefix ../Web",
     "dev": "concurrently \"npm start\" \"npm run client\" "
   },
   "author": "tc",

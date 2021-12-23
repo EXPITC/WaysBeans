@@ -2,7 +2,7 @@
   "development": {
     "username": "root",
     "password": null,
-    "database": "foodways_api",
+    "database": "waysbeans_api",
     "host": "localhost",
     "dialect": "mysql"
   },

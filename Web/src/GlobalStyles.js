@@ -12,7 +12,7 @@ export const GlobalStyles = createGlobalStyle `
         --fontBig: 55px;
         --fontMed: 24px;
         --fontSmall: 14px;
-        --mainYellow: #FFC700;
+        --mainBrown: #613D2B;
     }
     * {
         @import url('https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@800&family=Shippori+Antique+B1&display=swap');
