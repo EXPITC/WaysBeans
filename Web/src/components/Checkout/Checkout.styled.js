@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const Wrapper = styled.div`
-    border:1px solid black;
+    /* border:1px solid black; */
     z-index:-1;
     display:block;
     width:85%;
@@ -13,6 +13,10 @@ export const Wrapper = styled.div`
     margin-top: 92px;
     margin-bottom: 77px;
     justify-content:center;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    padding-top: 30px;
+    padding-bottom: 50px;
+    border-radius: 20px;
 ` 
 export const Preview = styled.img`
     width: ${props => props.I ? '73px' : '80px'};

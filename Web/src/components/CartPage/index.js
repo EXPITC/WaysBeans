@@ -44,48 +44,26 @@ const CartPage = () => {
             .then(res => setResto(res?.data?.data))
             .catch(err => handleError(err))
     }, [transaction])
-    console.log('////////////////////')
-    console.log(order)
-    console.log(transaction?.sellerId)
-    console.log(resto)
-    console.log('////////////////////')
+    
     useEffect(() => {
-        if (transaction?.status === 'Waiting Approve' ||transaction?.status === 'On The Way') {
+        if (transaction?.status === 'Waiting Approve' || transaction?.status === 'On The Way') {
             setOrderStatus(true)
         }
     }, [transaction])
-    useEffect(() => {
-        socket = io('http://localhost:5000', {
-            auth: {
-                token: localStorage.getItem("token") 
-            },
-            query: {
-                id: state.user.id
-            }
-        })
-        socket.on('connect', () => {
-            console.log(socket);
-        })
-        socket.on("connect_error", (err) => {
-            console.error(err.message); 
-        });
-        return () => {
-            socket.disconnect()
-        }
-    },[])
+    
     const orderDelete = async (x) => {
         try {
             if(orderStatus === true) return null
-            console.log(x)
+
             const res = await API.delete(`/order/${x}`)
-            console.log(res)
+
             setReresh(!refresh)
         } catch (err) {
             handleError(err)
         }
     }
 
-    // console.log(transaction.id)
+
     
     const addHandle = async (x) => {
         try {
@@ -101,7 +79,7 @@ const CartPage = () => {
                 qty: 1
             }
             res = JSON.stringify(res)
-            console.log(res)
+
             await API.post('/add/order', res, config)
             setReresh(!refresh)
         } 

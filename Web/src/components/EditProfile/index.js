@@ -46,7 +46,6 @@ const EditProfile = ({ U }) => {
                 setPre(Clip)
             }
         }
-        console.log(form)
     }
     const handleSubmit = async (e) => {
         try {

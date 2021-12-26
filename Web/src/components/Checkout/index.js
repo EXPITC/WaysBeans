@@ -8,11 +8,12 @@ import Clip from '../../img/clip.svg'
 import Icon from '../../img/Icon.svg'
 
 import { Wrapper, Preview , InputSide, Flex, FlexCollum, Pp ,Popout ,Modal} from './Checkout.styled'
-// import { useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 let socket;
 const AddProduct = () => {
-    // const navigate = useNavigate()
+    const navigate = useNavigate()
     const [orderStatus ,setOrderStatus] = useState(false)
     const { state } = useContext(UserContext)
     const { user } = state
@@ -27,7 +28,7 @@ const AddProduct = () => {
         address: '',
         postcode: '',
         attachment: '',
-        status: 'On The Way',
+        status: 'Waiting Approve',
     })
     let [pre , setPre] = useState(Clip)
     const handleChange = (e) => {
@@ -45,7 +46,6 @@ const AddProduct = () => {
     }
     const handleSubmit = async (e) => {
         try {
-            console.log(form)
             e.preventDefault();
             const config = {
                 headers: {
@@ -75,6 +75,8 @@ const AddProduct = () => {
             })
             setPre(Clip)
             setOrderStatus(true)
+            socket.emit('newtransactions', 'catch')
+            socket.emit('toOrder')
         } catch (err) {
             handleError(err)
         }
@@ -92,12 +94,8 @@ const AddProduct = () => {
         socket.on('connect', () => {
             console.log(socket);
         })
-        // socket.on('new transaction', (x) => {
-        //     console.log(x)
-        //     socket.emit('transaction')
-        //     Transaction()
-        // })
-        socket.emit('transaction')
+        socket.emit('toOrder', 'catch')
+        // socket.emit('newtransactions', 'catch')
         socket.on("connect_error", (err) => {
             console.error(err.message); 
         });
@@ -111,20 +109,20 @@ const AddProduct = () => {
             .then(res => setTotal(res.data.total))
             .catch(err => handleError(err))
         await API.get('/transaction/active')
-            .then(res => {setOrder(res.data.data.transactions[0].product); setTransaction(res.data.data.transactions[0]) })
-            .catch(err => handleError(err))
+            .then(res => {
+                setOrder(res.data.data.transactions[0].product);
+                setTransaction(res.data.data.transactions[0])
+            })
+            .catch(err => { handleError(err); navigate('/');})
     }, [])
-    console.log(order)
-    console.log(transaction.status)
     useEffect(() => {
-        if (transaction.status === 'Waiting Approve') {
+        if (transaction.status === 'Waiting Approve' ) {
             setOrderStatus(true)
         }
     },[transaction])
     const check = (state,x) => {
         let y = x.split('T')[0]
         let z = y.split('-')
-        console.log(z)
         switch (state) {
             case 'day': 
                 return (new Date(z[0], z[1], z[2]).toLocaleString('en-us', { weekday: 'long' }))
@@ -149,7 +147,7 @@ const AddProduct = () => {
             <Header noTroll/>
             <Wrapper>
                 <InputSide>
-                    <h2>Add Product</h2>
+                    <h2>Shipping</h2>
                     <input
                         type="text"
                         name="name"

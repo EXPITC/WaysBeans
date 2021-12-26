@@ -34,7 +34,6 @@ const AddProduct = () => {
     }
     const handleSubmit = async (e) => {
         try {
-            console.log(form)
             e.preventDefault();
             const config = {
                 headers: {

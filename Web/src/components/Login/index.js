@@ -26,9 +26,7 @@ const Login = ({ show, Cancel, toggle,}) => {
             [e.target.name]: e.target.value
         })
     }
-    useEffect(() => {
-        console.log(state)
-    },[state])
+
     const handelLogin = async (e) => {
         try {
             e.preventDefault()
@@ -39,7 +37,6 @@ const Login = ({ show, Cancel, toggle,}) => {
             }
             const body = JSON.stringify(Form)
             const response = await API.post("/login", body, config);
-            console.log(response.data.role)
             if (response?.status === 200) {
                 dispatch({
                     status: 'login',

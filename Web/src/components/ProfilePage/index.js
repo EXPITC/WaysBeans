@@ -23,12 +23,12 @@ const ProfilePage = () => {
     const [refresh,setRefresh] =  useState()
     const [historyTransaction,setHistoryTransaction] =  useState([])
     const [transaction, setTransaction] = useState()
-    useEffect(() => {
-        API.get('/transaction/active')
-            .then(res => setTransaction(res))
-            .catch(err => handleError(err))
-    }, [refresh])
-    console.log(transaction)
+    // useEffect(() => {
+    //     API.get('/transaction/active')
+    //         .then(res => setTransaction(res))
+    //         .catch(err => handleError(err))
+    // }, [refresh])
+
     const data = [
         {
             title1: (isOwner? 'Profile Partner' : 'My Profile'),
@@ -52,10 +52,11 @@ const ProfilePage = () => {
     socket.on('connect', () => {
       console.log(socket);
     })
-    socket.on('new transactions' , ()=>{
-        loadTrans()
+    socket.on('newtransactions', (x) => {
+        // console.log(x)
+        // loadTrans()
     })
-    socket.emit("loadTransaction",state.user.id)
+    // socket.emit("loadTransaction",state.user.id)
     loadTrans()
     socket.on("connect_error", (err) => {
         console.error(err.message); 
@@ -68,13 +69,11 @@ const ProfilePage = () => {
         socket.emit("loadTransaction",state.user.id)
         socket.on("transaction", (data) => {
             setHistoryTransaction(data)
-            console.log(data)
         })
     }
     const check = (state,x) => {
         let y = x.split('T')[0]
         let z = y.split('-')
-        console.log(z)
         switch (state) {
             case 'day': 
                 return (new Date(z[0], z[1], z[2]).toLocaleString('en-us', { weekday: 'long' }))
@@ -88,25 +87,19 @@ const ProfilePage = () => {
         
     }
     const [pre, setPre] = useState(user?.image)
-    const [form, setForm] = useState({
-        image:''
-    })
+
     const handleChange = async (e) => {
         try {
-        setForm({
-            image: e.target.files
-        })
+        let x =  e.target.files[0]
         setPre(URL.createObjectURL(e.target.files[0]));
-        console.log(form)
             const config = {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             }
             const formData = new FormData();
-            formData.set("image", form?.image[0], form?.image[0]?.name);
-            console.log(formData)
-            console.log(await API.patch('/user', formData, config))
+            formData.set("image", x, x?.name);
+            await API.patch('/user', formData, config)
             const response = await API.get('/login')
             await dispatch({
                 status: 'login',
@@ -116,7 +109,7 @@ const ProfilePage = () => {
             handleError(err)
         }
     }
-   console.log(historyTransaction)
+
     return (
         <>
             <Header/>
@@ -181,11 +174,11 @@ const ProfilePage = () => {
                                         :null
                                     }
                                     {
-                                        x.status === 'Complete' ?
+                                        x.status === 'On The Way' ?
                                             <FlexCollum  btwn i t c>
                                             <img src={Icon} className={'icon'}/>
                                             <Barcode src={x.status}/>
-                                            <ButtonsComp>{x.status}</ButtonsComp>
+                                            <ButtonsS>{x.status}</ButtonsS>
                                         </FlexCollum> 
                                         :null
                                         }

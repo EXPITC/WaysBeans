@@ -37,7 +37,6 @@ const CartPage = () => {
         let xa = 0
         order.map(x => {
             xa = (xa + x.order.qty)
-            console.log(xa)
         })
         return xa
     }

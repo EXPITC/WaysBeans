@@ -21,7 +21,14 @@ exports.addOrder = async (req, res) => {
             where: {id: transactionId}
         })
         if (add) { 
-           
+            if (dataProduct.stock === 0) {
+                return (
+                    res.status(200).send({
+                        status: 'product out stock',
+                        dataProduct
+                    })
+                )
+           }
             await order.update({
                 ...add,
                 qty: add.qty + qty
@@ -84,7 +91,7 @@ exports.orderCount = async (req, res) => {
             where: {
                 buyerId: req.user.id,
                 status: {
-                    [Op.or]: ['Waiting Approve', 'On The Way', 'Order']
+                    [Op.or]: ['Waiting Approve', 'Order']
                 }
             }
         })

@@ -5,15 +5,14 @@ import approve from '../../img/approve.svg'
 import cancel from '../../img/cancel.svg'
 import { Wrapper ,Head ,Tab ,Special ,TwoB} from './TransactionPage.styled';
 import {UserContext} from '../../Context/userContext'
-import {API, handleError} from '../../config/api'
+
 
 
 let socket;
 const TransactionPage = () => {
     const { state, dispatch } = useContext(UserContext)
-    const [refresh, setRefresh] = useState(false)
     const [transaction, setTransaction] = useState([])
-    const [firstHolder , setFirstHolder] = useState(false)
+    // const [refresh,setRefresh] = useState(false)
     useEffect(() => {
         socket = io('http://localhost:5000', {
             auth: {
@@ -26,15 +25,12 @@ const TransactionPage = () => {
         socket.on('connect', () => {
             console.log(socket);
         })
-        // socket.on('new transaction', (x) => {
-        //     console.log(x)
-        //     socket.emit('transaction')
-        //     Transaction()
-        // })
-        if (firstHolder === false) {
-            setFirstHolder(true)
-        }
-        socket.emit('transaction')
+        
+        socket.on('toOrder', (x) => {
+            console.log(x)
+            // setRefresh(!refresh)
+            
+        })
         socket.on("connect_error", (err) => {
             console.error(err.message); 
         });
@@ -42,18 +38,19 @@ const TransactionPage = () => {
         return () => {
             socket.disconnect()
         }
-    }, [])
+    }, [transaction])
     
     const Approve = (x) => {
-        socket.emit('otw')
+        // socket.emit('otw')
         socket.emit('accept', x)
-        setRefresh(!refresh)
     }
     const Cancel = (x) => {
         socket.emit('cancel', x)
-        setRefresh(!refresh)
     }
+
     const Transaction = () => {
+        socket.emit('transaction')
+        socket.emit('newTransaction')
         socket.on('transactionData', (data) => {
             setTransaction(data)
             console.log(data)

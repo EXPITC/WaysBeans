@@ -1,7 +1,7 @@
 {
-  "name": "backend-foodways",
+  "name": "backend-WaysBeans",
   "version": "1.0.0",
-  "description": "api for waysbeans",
+  "description": "api for WaysBeans",
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",

@@ -45,7 +45,7 @@ const Register = ({ showR , Cancel , toggle , RegisterSwitch ,}) => {
                 })
                 // RegisterSwitch()
             }
-            console.log(response.data.data.user.role)
+
             if (response.data.data.user.role === 'owner') {
                 navigate('/Transaction')
             }

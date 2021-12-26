@@ -33,7 +33,6 @@ const Header = ({ trigger ,noTroll}) => {
             .then((res) => { setResto(res.data.data.resto.data)})
             .catch((err) => { handleError(err) })
     }, [])
-    console.log(resto)
     return (
         <>
         <Head>

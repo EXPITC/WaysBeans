@@ -6,7 +6,7 @@ exports.addTransaction = async (req, res) => {
             where: {
                 buyerId: req.user.id,
                 status: {
-                    [Op.or] : ['Waiting Approve','On The Way', 'Order']
+                    [Op.or] : ['Waiting Approve', 'Order']
                 }
            } 
         })
@@ -17,11 +17,10 @@ exports.addTransaction = async (req, res) => {
                 thenTransaction
             })
         }
-        console.log('/////////////////////')
+
         let data = await req.body
-        console.log(data)
-        console.log(req.user.id)
-        console.log('/////////////////////')
+        const {productId ,qty} = data.product[0]
+        console.log(productId)
         let response = await transactions.create({
             sellerId: data.sellerId,
             buyerId: req.user.id,
@@ -43,8 +42,18 @@ exports.addTransaction = async (req, res) => {
             })
             await order.bulkCreate(dataOrder)
         }
+        const dataProduct = await products.findOne({
+            where: {id: productId}
+        })
+        await products.update({
+            stock: dataProduct.stock - qty
+        },{
+            where: {
+                id : dataProduct.id
+            }
+        })
         console.log('pass3')
-
+       
         response = await transactions.findOne({where: {
             id: response.id,
         },
@@ -210,7 +219,7 @@ exports.getTransactionActive = async (req, res) => {
             where: {
                 buyerId: id,
                 status: {
-                    [Op.or] : ['Waiting Approve','On The Way','Order']
+                    [Op.or] : ['Waiting Approve','Order']
                 }
             },
             include: [
