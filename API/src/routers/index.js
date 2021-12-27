@@ -47,7 +47,8 @@ router.post('/add/product/',userCheck, owner, uploadImg('image'), addProduct)
 router.get('/products', userCheck, owner,getProducts)
 router.get('/products/all', getProductsAll)
 router.get('/product/:id',  getProduct)
-router.patch('/product/:id', userCheck, owner,editProduct)
+router.patch('/product/:id', userCheck, editProduct)
+router.patch('/productImg/:id', userCheck,  uploadImg('image') ,editProduct)
 router.delete('/product/:id', userCheck, owner,deleteProduct)
 
 

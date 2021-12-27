@@ -49,6 +49,7 @@ const Register = ({ showR , Cancel , toggle , RegisterSwitch ,}) => {
             if (response.data.data.user.role === 'owner') {
                 navigate('/Transaction')
             }
+            Cancel()
         } catch (err) {
             handleError(err)
             if (err.response?.status === 400) {

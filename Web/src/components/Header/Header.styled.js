@@ -68,6 +68,33 @@ export const Wrap = styled.div`
         opacity:1 !important;
         cursor:pointer;
     }
+    .login {
+        background: none !important;
+        border: 2px solid #613D2B;
+        color: #433434;
+        &:hover {
+            border: 2px solid #433434;
+            color: white;
+            background: #613D2B !important;
+        }
+    }
+    button {
+        width: 100px;
+        height: 30px;
+        background: #613D2B;
+        border-radius: 5px;
+        margin-left: 16px;
+        border: 2px solid #613D2B
+        font-size:var(--FontSmall);
+        color:white;
+        font-weight: bold;
+        font-family: 'Shippori Antique B1', sans-serif;
+        &:hover {
+            border: 2px solid #433434;
+            color: #433434;
+            background:transparent;
+        }
+    }
 `
 export const Polyy = styled.div`
     position:absolute;

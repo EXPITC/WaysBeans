@@ -28,7 +28,10 @@ const socketIo = (io) => {
             [Op.or]: [
               {buyerId: payload},
               {sellerId: payload}
-            ]
+            ],
+            status: {
+              [Op.or] : ['Success','Cancel' , 'On The Way' , 'Waiting Approve']
+            }
           },
           include: [
               {

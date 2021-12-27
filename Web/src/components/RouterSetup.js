@@ -9,6 +9,7 @@ import EditProfile from './EditProfile';
 import TransactionPage from './TransactionPage';
 import CartPage from './CartPage';
 import AddProduct from './AddProduct';
+import Product from './Product';
 import LandingPage from './LandingPage';
 import Header from './Header';
 import Checkout from './Checkout';
@@ -46,17 +47,18 @@ const RouterSetup = () => {
           {isLogin ?
             <>
              <Route exact path="/" element={<LandingPage />}/>
-             <Route path="/Profile" element={<ProfilePage/>}/>
              <Route path="/Edit/Profile" element={<EditProfile/>}/>
              {/* <Route path="/DetailResto/:id" element={<DetailPage/>}/> */}
              <Route path="/Detail/:id" element={<DetailPage/>}/>
               {isOwner ?
                 <>
+                <Route path="/Store" element={<Product/>}/>
                 <Route path="/Transaction" element={<TransactionPage/>}/>
                 <Route path="/Add-Product" element={<AddProduct />}/>
                 </>
                 :
                 <>
+                <Route path="/Profile" element={<ProfilePage/>}/>
                 <Route exact path="/Cart" element={<CartPage/>} />
                 <Route exact path="/Transaction/detail/:id" element={<DetailTrans/>} />
                 <Route exact path="/Cart/Checkout" element={<Checkout/>} />

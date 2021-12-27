@@ -62,8 +62,7 @@ const CartPage = () => {
                                         </Wrap3>
                                         <Wrap3>
                                             <div>
-                                                
-                                                        <h4 className="pinkBg">{x.order.qty}</h4>
+                                                <h4 className="pinkBg">{x.order.qty}</h4>
                                               
                                             </div>
                             

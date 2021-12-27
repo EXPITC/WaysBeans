@@ -10,12 +10,22 @@ import poly from '../../img/poly.svg';
 
 import { Head, TopFlex, Wrap ,Polyy ,Specialdrop} from './Header.styled';
 import DropDown  from '../DropDown';
+import Login from '../Login';
+import Register from '../Register';
 
-const Header = ({ trigger ,noTroll}) => {
+const Header = ({ trigger, noTroll }) => {
+    let [showL, setShowL] = useState(false);
+    let [showR, setShowR] = useState(false);
     let [show, setShow] = useState(false);
+    const toggleL = () => (setShowL(!showL), setShowR(false), setShow(false));
+    const toggleR = () => (setShowR(!showR), setShowL(false),setShow(false));
+
+    const CancelR = () => setShowR(!showR);
+    const CancelL = () => setShowL(!showL);
+
     const {state, dispatch} = useContext(UserContext)
     const toggle = () => (setShow(!show));
-    const { user } = state
+    const { user ,isLogin} = state
     let isOwner = false
     if (user.role === 'owner') {
         isOwner = true
@@ -35,13 +45,20 @@ const Header = ({ trigger ,noTroll}) => {
     }, [])
     return (
         <>
+            {isLogin ? null :
+            <>
+                    {showL ? (<Login show={showL} Cancel={CancelL} toggle={toggleR} />) : null}
+                    {showR ? (<Register showR={showR} Cancel={CancelR} toggle={toggleL}  />) : null}
+            </>  
+            }
         <Head>
             <TopFlex>
                 <Link to="/">
                 <img src={Icon} className="shake"/>
                 </Link>
                 <Wrap>
-                        {isOwner ? <Link className="cart" to="/Resto">
+                        {isLogin ? <>
+                            {isOwner ? <Link className="cart" to="/Store">
                             <img style={{width: '50px', height: '50px'}} src={Shop} />
                                 </Link>:
                             noTroll ? null :
@@ -51,22 +68,31 @@ const Header = ({ trigger ,noTroll}) => {
                                     <img src={Trolly} />
                                 </Link>
                             </>
-                        }
-                       
-                    <img className='profile' onClick={toggle} src={user.image} />
+                            }
+                            <img className='profile' onClick={toggle} src={user.image} />
+                    </>
+                    :
+                    <>
+                            <button onClick={toggleL} className="login">Login</button>
+                            <button onClick={toggleR}>Register</button>
+                    </>
+                    }
+                   
                 </Wrap>
             </TopFlex>
-            {show ? <>
-                    <Polyy>
-                        <div className="poly">
-                            <img src={poly} />
-                        </div>
-                    </Polyy>
-                    <Specialdrop>
-                        <DropDown className="drop" logout/>
-                    </Specialdrop>
+                {isLogin ? <>
+                    {show ? <>
+                        <Polyy>
+                            <div className="poly">
+                                <img src={poly} />
+                            </div>
+                        </Polyy>
+                        <Specialdrop>
+                            <DropDown className="drop" logout />
+                        </Specialdrop>
                     </>
-                : null}
+                        : null}
+                </> : null}
         </Head>
         </>
     )

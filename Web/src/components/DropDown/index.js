@@ -4,10 +4,10 @@ import { UserContext } from '../../Context/userContext';
 import { Wrapper ,Wrapper2 ,Icon , JustWrap ,Logout} from './DropDown.styled';
 import userIcon from '../../img/user.svg';
 import logoutIcon from '../../img/logout.svg';
-import foodIcon from '../../img/foodicon.svg';
-import Transaction from '../../img/transaction.svg';
+import seed from '../../img/seed.svg';
+import Transaction from '../../img/transaction.png';
 import { Link } from 'react-router-dom';
-const DropDown = ({U , LogoutSwitch , set, logout}) => {
+const DropDown = ({ set, logout}) => {
     // x = false;
     const { state, dispatch } = useContext(UserContext)
     const handleLogout = () => {
@@ -26,20 +26,13 @@ const DropDown = ({U , LogoutSwitch , set, logout}) => {
             {isOwner ?<>
                 <Wrapper2 >
                     <Wrapper>
-                        
-                        <Link to="/Profile">
-                        <JustWrap onClick={set}>
-                            <Icon src={userIcon} />
-                            <p>Profile Partner</p>
-                        </JustWrap>
-                        </Link>
-                        <Link to="/Add-Product">
-                        <JustWrap onClick={set}>
-                            <Icon src={foodIcon} />
+                        <Link to="/Add-Product" style={{textDecoration: 'none'}}>
+                        <JustWrap onClick={set} style={{textDecoration: 'none'}}>
+                            <Icon src={seed} />
                             <p>Add Product</p>
                         </JustWrap>
                         </Link>
-                        <Link to="/Transaction">
+                        <Link to="/Transaction" style={{textDecoration: 'none'}}>
                         <JustWrap onClick={set}>
                             <Icon src={Transaction} />
                             <p>Transaction</p>
@@ -47,25 +40,19 @@ const DropDown = ({U , LogoutSwitch , set, logout}) => {
                         </Link>
                     </Wrapper>
                     <Logout>
-                    {logout ? 
-                        <Link to="/">
+                        <Link to="/" style={{textDecoration: 'none'}} >
                             <JustWrap onClick={handleLogout}>
                             <Icon src={logoutIcon} />
                             <p>Logout</p>
                         </JustWrap>
                         </Link>
-                        :
-                        <JustWrap onClick={handleLogout}>
-                            <Icon src={logoutIcon} />
-                            <p>Logout</p>
-                        </JustWrap>}
                     </Logout>
                 </Wrapper2>
                 </>
                 :
                 <Wrapper2 h>
                     <Wrapper h>
-                    <Link to="/Profile">
+                    <Link to="/Profile" style={{textDecoration: 'none'}}>
                         <JustWrap h onClick={set}>
                             <Icon src={userIcon} />
                             <p>Profile</p>
@@ -73,18 +60,12 @@ const DropDown = ({U , LogoutSwitch , set, logout}) => {
                     </Link>
                     </Wrapper>
                     <Logout h>
-                        {logout ? 
-                        <Link to="/">
+                        <Link to="/" style={{textDecoration: 'none'}}>
                             <JustWrap onClick={handleLogout}>
                             <Icon src={logoutIcon} />
                             <p>Logout</p>
                         </JustWrap>
                         </Link>
-                        :
-                        <JustWrap onClick={handleLogout}>
-                            <Icon src={logoutIcon} />
-                            <p>Logout</p>
-                        </JustWrap>}
                     </Logout>
                 </Wrapper2>
             }

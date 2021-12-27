@@ -1,22 +1,22 @@
 import styled from 'styled-components';
 
 export const Wrapper = styled.div`
+    ${props => props.h ? 'padding-left:30px;' : null}
     display :flex !important;
     flex-direction :column !important;
-    justify-content:space-between !important;
+    /* justify-content:space-between !important; */
     align-items: center !important;
-    padding-top:${props => props.h ? '35px':'45px'};
-    padding-bottom:${props => props.h ? '35px' : '45px'};
-    width:300px !important;
+    justify-content:center !important;
+    gap:30px;
+    padding-top:${props => props.h ? '0px' : '45px'};
+    padding-bottom:${props => props.h ? '0px' : '45px'};
+    width:${props => props.h ? '200px' : '250px' } !important;
     background:white;
-    max-height:${props => props.h ? '112px !important' : '272px !important'};
-    /* top:10; */
-    /* right:60px; */
-    /* position:absolute; */
-    /* z-index:999; */
+    max-height:${props => props.h ? '75px !important' : '190px !important'};
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 4px 4px 20px rgba(0, 0, 0, 0.25);
     border-radius: 10px 10px 0 0;
     animation: h 1.3s ease-out forwards;
+    /* border:1px solid black; */
     @keyframes h {
         0%{
             height:0%;
@@ -34,11 +34,11 @@ export const Wrapper2 = styled.div`
     align-items: center !important;
     /* padding-top:32px; */
     /* padding-bottom:32px; */
-    height: ${props => props.h? '218px' : '350px'};
+    height: ${props => props.h? '155px' : '270px'};
     width:300px !important;
     background:transparent !important;
     top:10 !important;
-    right:60px;
+    right: ${props => props.h ? '15px;' : ' 40px'};
     position:absolute !important;
     z-index:999;
     /* box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 4px 4px 20px rgba(0, 0, 0, 0.25); */
@@ -56,20 +56,22 @@ export const Wrapper2 = styled.div`
 export const JustWrap = styled.div`
     /* border:1px solid black; */
     display:flex ;
-    justify-content:space-between !important;
+    /* justify-content:space-between !important; */
+    gap:15px;
     align-items: center !important;
     height:40px !important;
-    width:222px !important;
+    width:200px !important;
     opacity:0;
     animation: opc 2s linear forwards;
     animation-delay: 0.4s;
+   
     p {
         background:none !important;
         font-family: 'Montserrat', sans-serif !important;
         font-weight: bolder !important;
         color:black !important;
         font-size: 20px !important;
-        position:absolute !important;
+        /* position:absolute !important; */
         left:100px !important;
     }
     @keyframes opc {
@@ -85,12 +87,14 @@ export const JustWrap = styled.div`
     }
 `
 export const Logout = styled.div`
+    ${props => props.h ? 'padding-left:30px;' : null}
     display :flex;
+    /* border:1px solid; */
     flex-direction :column;
     align-items: center;
     justify-content: center;
-    width:300px;
-    height: ${props => props.h ? '100px' : '75px'};
+    width:${props => props.h ? '200px' : '250px'} !important;
+    height: ${props => props.h ? '75px' : '75px'};
     opacity:0;
     position:absolute;
     background:white;

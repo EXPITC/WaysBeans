@@ -29,6 +29,8 @@ export const Product = styled.img`
     border-bottom-left-radius: 10px;
     border-top-left-radius: 10px;
     overflow: hidden;
+    object-fit: cover;
+    background-size: cover;
 `
 export const DetailProduct = styled.div` 
     /* border:1px solid red; */
@@ -61,7 +63,11 @@ export const DetailProduct = styled.div`
         margin-bottom:35px;
     }
     button {
-        margin-top:55px;
+        margin-top:${props => props.h ? '0px' : '55px'};
+        font-size:16px;
+        font-weight:bold;
+        letter-spacing:2px;
+        font-family: "Helvetica Neue",Helvetica;
         margin-bottom:0px;
         background:#613D2B;
         border:1px solid black;
@@ -75,4 +81,67 @@ export const DetailProduct = styled.div`
             background: none;
         }
     }
+`
+export const InputT = styled.input`
+    margin-top:0px;
+    border:none;
+    background:transparent;
+    font-size: 48px;
+    font-weight:bold;
+    margin-bottom:5px;
+    color: #613D2B;
+    font-family: "Helvetica Neue",Helvetica;
+    &:focus {
+        outline: none;
+        border-bottom: 2px solid #613D2B;
+    }
+`
+export const InputD = styled.textarea`
+    border:none;
+    background:transparent;
+    width: 532px;
+    height: 146px;
+    font-size: 1rem;
+    &:focus {
+        outline: none;
+        border-bottom: 2px solid #613D2B;
+    }
+`
+export const InputP = styled.input`
+    font-size: 30px;
+    font-weight:bold;
+    border:none;
+    background:transparent;
+    text-align: right;
+    right: 0;
+    font-family: "Helvetica Neue",Helvetica;
+    color: #613D2B;
+    &:focus {
+        outline: none;
+        border-bottom: 2px solid #613D2B;
+    }
+`
+
+export const InputS = styled.input`
+    border:none;
+    margin-top:18px;
+    /* border:1px solid black; */
+    height: 20px;
+    width:auto;
+    background:transparent;
+    margin-top:21;
+    margin-bottom:55;
+    color: #613D2B;
+    font-family: "Helvetica Neue",Helvetica;
+    font-weight:normal;
+    font-size: 1.1rem;
+    margin-bottom:35px;
+    &:focus {
+        outline: none;
+        border-bottom: 2px solid #613D2B;
+    }
+`
+export const Inline = styled.div` 
+    display: flex;
+    gap:3px;
 `

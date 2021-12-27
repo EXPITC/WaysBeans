@@ -200,19 +200,27 @@ exports.deleteProduct = async (req, res) => {
 exports.editProduct = async (req, res) => {
     try {
         const { id } = req.params
-        const data = req.body
+
+        let data = req.body
         const sellerId = req.user.id
-        const productData = await product.findOne({
+
+        const productData = await products.findOne({
             where: {id}
         })
+
         const fs = require('fs')
         const path = `./uploads/img/${productData.img}`
-
-        if (req.body?.img != productData.img) {
-            try {
-                fs.unlinkSync(path)
-            } catch (error) {
-                console.log(error)
+        if (req.file?.filename) {
+            if (req.body?.img != productData.img) {
+                data = {
+                    ...data,
+                    img: req.file?.filename
+                }
+                try {
+                    fs.unlinkSync(path)
+                } catch (error) {
+                    console.log(error)
+                }
             }
         }
 
@@ -222,7 +230,7 @@ exports.editProduct = async (req, res) => {
                 sellerId: sellerId
             },
         })
-    
+
         res.send({
             status: 'success',
             message: 'products successfully update' 

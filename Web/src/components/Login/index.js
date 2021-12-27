@@ -46,6 +46,7 @@ const Login = ({ show, Cancel, toggle,}) => {
             if (response.data?.role === 'owner') {
                 navigate('/Transaction')
             }
+            Cancel()
         } catch (err) {
             handleError(err)
             if (err.response?.status === 400) {

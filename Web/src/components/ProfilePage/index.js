@@ -119,7 +119,7 @@ const ProfilePage = () => {
                     <Flex>
                         <FlexCollum>
                         <label className="second" htmlFor='imgFile'>
-                            <img className="img" src={pre}alt={data[0].img}/>
+                            <img className="img" src={pre} alt={user.fullname}/>
                             <input type="file" name='image' id= "imgFile" hidden onChange={handleChange}/>
                         </label>
                         </FlexCollum>

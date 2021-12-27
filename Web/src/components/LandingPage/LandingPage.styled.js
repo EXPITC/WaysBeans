@@ -228,29 +228,7 @@ export const WrapMain = styled.div`
         color:black;
     }
 `
-export const CardResto = styled.div`
-    width: 250px;
-    height: 95px;
-    background: #FFFFFF;
-    border-radius: 5px;
-    display:flex;
-    align-items: center;
 
-    h2 {
-        font-family: Abhaya Libre ExtraBold;
-        font-style: normal;
-        font-weight: 800;
-        font-size: var(--fontMed);
-        line-height: 28px;
-        margin-left:19px;
-        color:black;
-    }
-    img {
-        width: 65px;
-        height: 65px;
-        margin-left: 16px;
-    }
-`
 export const Banner = styled.img` 
     width:100%;
     margin-top:40px;
@@ -264,6 +242,7 @@ export const Card = styled.div`
     flex-direction: column;
     overflow: hidden;
    cursor: pointer;
+   box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
     p {
         font-family: 'serif';
         font-style: normal;

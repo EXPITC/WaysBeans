@@ -30,11 +30,18 @@ export const Head = styled.th`
     padding-left: 10px;
     font-size: 14px;
     color:black;
-    ${props => props.n ? ' min-width:72px': null};
-    ${props => props.n2 ? 'min-width:183px': null};
-    ${props => props.a ? ' min-width:280px': null};
-    ${props => props.p ? ' min-width:191px': null};
-    ${props => props.s ? ' min-width:160px' : null};
+    ${props => props.n ? ' min-width:72px !important': null};
+    ${props => props.n2 ? 'min-width:183px !important': null};
+    ${props => props.a ? ' min-width:280px !important': null};
+    ${props => props.p ? ' min-width:191px !important': null};
+    ${props => props.s ? ' min-width:160px !important' : null};
+    @media only screen and (max-width:1080px) {
+        ${props => props.n ? ' min-width:42px !important': null};
+        ${props => props.n2 ? 'min-width:63px !important': null};
+        ${props => props.a ? ' min-width:140px !important': null};
+        ${props => props.p ? ' min-width:151px !important': null};
+        ${props => props.s ? ' min-width:80px !important' : null};
+    }
     width:100%;
     font-family: 'Montserrat', sans-serif;
     text-align: ${props => props.m ? 'center' : 'left'};
