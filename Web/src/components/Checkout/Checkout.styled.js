@@ -209,3 +209,9 @@ export const Modal = styled.div`
         color: #469F74;
     }
 `
+
+export const WrapperFlex = styled.div`
+    /* border:1px solid black; */
+    min-height:500px;
+    height:100%;
+`

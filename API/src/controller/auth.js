@@ -143,15 +143,13 @@ exports.auth = async (req, res) => {
         const { fullname, role, email ,image} = userAcc
         const userData = {
             id,
-            status: userAcc.role
+            role
         }
         
         const token = jwt.sign(userData,process.env.JWT_TOKEN)
 
         res.status(200).send({
             status: 'login',
-            id,
-            role,
             fullname,
             email,
             token,

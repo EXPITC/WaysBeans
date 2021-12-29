@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext} from 'react';
 import { useNavigate } from 'react-router-dom'
 import { UserContext } from '../../Context/userContext';
-import {API, handleError} from '../../config/api'
+import { API, handleError } from '../../config/api';
 
 import Xbtns from '../../img/close.png';
 

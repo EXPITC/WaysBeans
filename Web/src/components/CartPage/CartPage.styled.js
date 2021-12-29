@@ -153,9 +153,9 @@ export const Wrap3 = styled.div`
     align-items: center;
     gap:1rem;
     justify-content: space-between;
+    color: #613D2B;
     p {
         padding-bottom: 10px;
-        color:red;
     }
     div {
         display: flex;
@@ -204,7 +204,7 @@ export const FlexCollum = styled.div`
 export const Pp = styled.p`
     @import url('https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@800&family=Montserrat:ital,wght@1,100&family=Shippori+Antique+B1&display=swap');
     font-family: 'Montserrat', sans-serif;
-    color: ${props => props.r? 'red !important' : 'black !important'};
+    color: ${props => props.r? '#613D2B !important' : '#974A4A !important;'};
     font-size: 14px;
     font-weight: ${props => props.b? 'bold' : null};
 `

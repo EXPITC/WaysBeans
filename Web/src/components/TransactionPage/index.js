@@ -77,7 +77,7 @@ const TransactionPage = () => {
                         return (
                             <tr>
                             <Special>{count}</Special>
-                            <Special>{_.buyer.fullname}</Special>
+                            <Special>{_.name}</Special>
                             <Special>{_.address}</Special>
                             <Special>{_.product.map((x) => {
                                 return(x.title+',')

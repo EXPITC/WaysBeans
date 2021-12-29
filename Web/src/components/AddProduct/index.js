@@ -123,30 +123,5 @@ const AddProduct = () => {
         </>
     )
 }
-{/* <h1 >Add Product</h1>
-                    <Flex btwn>
-                        <input
-                            type="text"
-                            name="title"
-                            placeholder="Title"
-                            className="first"
-                            onChange={handleChange}
-                            value= {form.title}
-                            />
-                        <label className="second" htmlFor='imgFile'>Attach Image
-                            <img src={pre}/>
-                        <input type="file" name='image' id="imgFile" onChange={handleChange}hidden/>
-                        </label>
-                    </Flex>
-                    <input
-                        className="third"
-                        type="text"
-                        name="price"
-                        placeholder="Price"
-                        onChange={handleChange}
-                        value= {form.price}
-                        />
-                <WrapperMain>
-                    <button onClick={handleSubmit}>Save</button>
-                </WrapperMain> */}
+
 export default AddProduct

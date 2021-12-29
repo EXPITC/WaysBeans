@@ -1,15 +1,22 @@
-import { createContext, useReducer ,useEffect} from 'react'
-
+import React,{ createContext, useReducer } from 'react'
+import jwt from 'jsonwebtoken'
 export const UserContext = createContext(null);
 
 const initialState = {
     isLogin: false,
-    user:{}
+    user: {},
 }
 
 const reducer = (state, action) => {
     const { status, payload } = action;
+    // let verify;
+    // if (payload?.token) {
+    //     verify = jwt.verify(payload.token, process.env.REACT_APP_X);
+    // }
     
+    // const verify = jwt.verify(payload.token, process.env.REACT_APP_X);
+    // const { role } = verify
+    // console.log(role)
     switch (status) {
         case 'login':
             localStorage.setItem('token', payload.token)

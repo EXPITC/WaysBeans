@@ -7,7 +7,7 @@ import Header from '../Header';
 import Clip from '../../img/clip.svg'
 import Icon from '../../img/Icon.svg'
 
-import { Wrapper, Preview , InputSide, Flex, FlexCollum, Pp ,Popout ,Modal} from './Checkout.styled'
+import { Wrapper, Preview , InputSide, Flex, FlexCollum, Pp ,Popout ,Modal ,WrapperFlex} from './Checkout.styled'
 import { Navigate } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
@@ -193,6 +193,7 @@ const AddProduct = () => {
                         <input type="file" name='image' id="imgFile" onChange={handleChange} hidden/>
                     </label>
                 </InputSide>
+                <WrapperFlex>
                 <Flex >
                     {order.map((x) => {
                         return (
@@ -216,6 +217,7 @@ const AddProduct = () => {
                     })}
                         <button onClick={handleSubmit}>Pay</button>
                 </Flex>
+                </WrapperFlex>
             </Wrapper>
         </>
         </>

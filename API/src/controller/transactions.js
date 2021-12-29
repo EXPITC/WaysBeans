@@ -6,7 +6,7 @@ exports.addTransaction = async (req, res) => {
             where: {
                 buyerId: req.user.id,
                 status: {
-                    [Op.or] : ['Waiting Approve', 'Order']
+                    [Op.or] : ['Order']
                 }
            } 
         })
@@ -219,7 +219,7 @@ exports.getTransactionActive = async (req, res) => {
             where: {
                 buyerId: id,
                 status: {
-                    [Op.or] : ['Waiting Approve','Order']
+                    [Op.or] : ['Order']
                 }
             },
             include: [

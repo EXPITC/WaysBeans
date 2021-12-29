@@ -1,4 +1,5 @@
 import React ,{useState,useEffect,useContext} from 'react';
+import jwt from 'jsonwebtoken';
 //React router
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
@@ -25,9 +26,11 @@ const RouterSetup = () => {
     const check = async () => {
       try {
         const res = await API.get('/login')
+        const verify = jwt.verify(res.data.token, process.env.REACT_APP_X);
+        const {role} = verify
         dispatch({
           status: 'login',
-          payload: res.data
+          payload: {...res.data,role}
         })
       } catch (err) {
         handleError(err)
@@ -37,8 +40,9 @@ const RouterSetup = () => {
         check()
     }, [])
   const { isLogin, user } = state
+  // const [isOwner, setIsOwner] = useState(false)
   let isOwner = false
-  if (user?.role === 'owner') {
+  if (user.role === 'owner') {
     isOwner = true
   }
     return (
