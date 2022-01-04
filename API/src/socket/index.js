@@ -23,11 +23,13 @@ const socketIo = (io) => {
         const verified = jwt.verify(token, process.env.JWT_TOKEN )
         // console.log('verified.id')
         // console.log(verified?.id)
+        const{id} = verified
+        console.log(id)
         let data = await transactions.findAll({
           where : {
             [Op.or]: [
-              {buyerId: payload},
-              {sellerId: payload}
+              {buyerId: id},
+              {sellerId: id}
             ],
             status: {
               [Op.or] : ['Success','Cancel' , 'On The Way' , 'Waiting Approve']

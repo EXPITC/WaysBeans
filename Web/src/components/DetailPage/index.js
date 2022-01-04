@@ -225,10 +225,14 @@ const DetailPage = () => {
         <>
             <Header trigger={trigHead} />
             <Wrapper>
-                <label htmlFor={isOwner ? 'img' : null} >
-                    <Product src={data.prev} onClick={isOwner ? null : null} alt={product.title} />
-                    <input type='file' id='img' onChange={handleImg} hidden />
-                </label>
+                {isOwner ?
+                    <label htmlFor='img'>
+                        <Product src={data.prev} alt={product.title} />
+                        <input type='file' id='img' onChange={handleImg} hidden />
+                    </label> :
+                    <>
+                    <Product src={data.prev} alt={product.title} />
+                    </>}
                 <DetailProduct h>
                     {isOwner ?
                         <>
@@ -236,7 +240,7 @@ const DetailPage = () => {
                             {stockV ? <Inline><h3>Stock:</h3><InputS value={data.stock} onChange={(e) => { handelData('stock', e.target.value) }}  onKeyDown={(e)=> {enterHandle('stock',e)}} /></Inline> : <h3 onClick={()=>setStockV(!stockV)}>Stock: {product.stock}</h3>}
                             {descriptionV ? <InputD value={data.description} onChange={(e) => { handelData('description', e.target.value) }}  onKeyDown={(e)=> {enterHandle('description',e)}}/> : <p onClick={()=>setDescriptionV(!descriptionV)}>{product.description}</p>}
                             {priceV ? <InputP value={data.price} onChange={(e) => { handelData('price', e.target.value) }} onKeyDown={(e) => { enterHandle('price', e) }} /> : <h2 onClick={() => setPriceV(!priceV)}>{convertRupiah.convert(product.price)}</h2>}
-                            {imgV ? <> <button onClick={uploadImg}>Update Product Pict?</button> <button onClick={cancelImg}>Cancel?</button></>: null}
+                            {imgV ? <> <button onClick={uploadImg}>Update Product Pict</button> <button onClick={cancelImg}>Cancel</button></>: null}
                         </>
                     :
                     <>

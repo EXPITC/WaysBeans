@@ -6,7 +6,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 //components
 import DetailPage from './DetailPage';
 import ProfilePage from './ProfilePage';
-import EditProfile from './EditProfile';
+// import EditProfile from './EditProfile';
 import TransactionPage from './TransactionPage';
 import CartPage from './CartPage';
 import AddProduct from './AddProduct';
@@ -26,8 +26,8 @@ const RouterSetup = () => {
     const check = async () => {
       try {
         const res = await API.get('/login')
-        const verify = jwt.verify(res.data.token, process.env.REACT_APP_X);
-        const {role} = verify
+        const verify = jwt.verify(res.data.token, process.env.REACT_APP_JWT_TOKEN);
+        const {role } = verify
         dispatch({
           status: 'login',
           payload: {...res.data,role}
@@ -51,7 +51,7 @@ const RouterSetup = () => {
           {isLogin ?
             <>
              <Route exact path="/" element={<LandingPage />}/>
-             <Route path="/Edit/Profile" element={<EditProfile/>}/>
+             {/* <Route path="/Edit/Profile" element={<EditProfile/>}/> */}
              {/* <Route path="/DetailResto/:id" element={<DetailPage/>}/> */}
              <Route path="/Detail/:id" element={<DetailPage/>}/>
               {isOwner ?

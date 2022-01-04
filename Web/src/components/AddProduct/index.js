@@ -49,6 +49,7 @@ const AddProduct = () => {
             formData.set('stock', form.stock)
             formData.set('description', form.description)
             await API.post('/add/product', formData ,config)
+                .then(res => console.log(res))
             setForm({
                 title: '',
                 image: '',

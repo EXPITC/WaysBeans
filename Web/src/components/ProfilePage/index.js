@@ -66,8 +66,10 @@ const ProfilePage = () => {
     }
    }, [])
     const loadTrans = () => {
+        console.log(state.user.id)
         socket.emit("loadTransaction",state.user.id)
         socket.on("transaction", (data) => {
+            console.log(data)
             setHistoryTransaction(data)
         })
     }
