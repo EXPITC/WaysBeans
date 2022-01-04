@@ -5,6 +5,8 @@ import convertRupiah from 'rupiah-format'
 import { Wrapper,Product ,DetailProduct ,InputT ,InputS, InputD, InputP ,Inline} from './DetailPage.styled'
 import { useParams } from 'react-router';
 import { UserContext } from '../../Context/userContext';
+// import the Rating
+import Rating from './Rating'
 
 
 const DetailPage = () => {
@@ -32,6 +34,7 @@ const DetailPage = () => {
     const [descriptionV, setDescriptionV] = useState(false)
     const [priceV, setPriceV] = useState(false)
     const [imgV, setImgV] = useState(false)
+
     const getProduct = async () => {
         await API.get(`/product/${id}` )
             .then((res) => {setProduct(res.data.data[0]) })
@@ -221,6 +224,8 @@ const DetailPage = () => {
         })
         setImgV(false)
     }
+    // check if costumer then fect the token for review/rating
+
     return (
         <>
             <Header trigger={trigHead} />
@@ -252,6 +257,7 @@ const DetailPage = () => {
                     </>
                     }
                 </DetailProduct>
+                <Rating/>
             </Wrapper>
         </>
     )

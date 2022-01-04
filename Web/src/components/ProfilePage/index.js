@@ -185,7 +185,7 @@ const ProfilePage = () => {
                                         :null
                                         }
                                      {
-                                        x.status === 'Succes' ?
+                                        x.status === 'Success' ?
                                             <FlexCollum  btwn i t c>
                                             <img src={Icon} className={'icon'}/>
                                             <Barcode src={x.status}/>

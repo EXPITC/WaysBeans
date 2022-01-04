@@ -6,7 +6,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 //components
 import DetailPage from './DetailPage';
 import ProfilePage from './ProfilePage';
-// import EditProfile from './EditProfile';
 import TransactionPage from './TransactionPage';
 import CartPage from './CartPage';
 import AddProduct from './AddProduct';
@@ -16,7 +15,7 @@ import Header from './Header';
 import Checkout from './Checkout';
 import DetailTrans from './detailTrans';
 
-import {API,setAuthToken, handleError} from '../config/api'
+import {API, handleError} from '../config/api'
 import { UserContext } from '../Context/userContext';
 
 
@@ -40,7 +39,6 @@ const RouterSetup = () => {
         check()
     }, [])
   const { isLogin, user } = state
-  // const [isOwner, setIsOwner] = useState(false)
   let isOwner = false
   if (user.role === 'owner') {
     isOwner = true
@@ -52,7 +50,6 @@ const RouterSetup = () => {
             <>
              <Route exact path="/" element={<LandingPage />}/>
              {/* <Route path="/Edit/Profile" element={<EditProfile/>}/> */}
-             {/* <Route path="/DetailResto/:id" element={<DetailPage/>}/> */}
              <Route path="/Detail/:id" element={<DetailPage/>}/>
               {isOwner ?
                 <>
