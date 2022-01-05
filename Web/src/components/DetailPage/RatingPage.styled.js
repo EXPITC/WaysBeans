@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const Wrapper = styled.div`
     width: 100%;
-    border:1px solid black;
+    /* border:1px solid black; */
 `
 
 export const InputSection = styled.textarea`
@@ -28,7 +28,6 @@ export const InputSection = styled.textarea`
     }
     &::placeholder{
         color: #613D2B;
-        opacity: 0.8;
     }
 `
 
@@ -40,7 +39,7 @@ export const Rate = styled.img`
 
 export const ReviewsWrapper = styled.div`
     padding:10px;
-    border:1px solid red;
+    /* border:1px solid red; */
     display:flex;
     flex-direction:column;
     h1 {
@@ -53,9 +52,10 @@ export const ReviewsWrapper = styled.div`
 
 export const RatingComments = styled.div`
     margin-top:0;
-    border:1px solid blue;
+    /* border:1px solid blue; */
     overflow-y: auto;
     height:433px;
+    padding-left:4px;
     &::-webkit-scrollbar-track{
             box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
             background-color: #F5F5F5;

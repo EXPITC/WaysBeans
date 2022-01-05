@@ -1,4 +1,4 @@
-const { transactions ,users , products , order} = require('../../models')
+const { transactions ,users , products , order , rating} = require('../../models')
 const Op = require('Sequelize').Op;
 const { userCheck, admin, owner } = require('../middleware/userCheck')
 const jwt = require('jsonwebtoken');
@@ -87,7 +87,7 @@ const socketIo = (io) => {
       console.log(payload)
       const id = payload
       try {
-        let data = transactions.update({status :  'Waiting Approve'},{
+        let data = await transactions.update({status :  'Waiting Approve'},{
           where: { id : id }
       })
         socket.emit("OrderData", data)
@@ -98,9 +98,10 @@ const socketIo = (io) => {
 
     socket.on('confirm', async (payload) => {
     try {
-      let data = transactions.update({ status: 'Success' }, {
+      let data = await transactions.update({ status: 'Success' }, {
         where: {id: payload}
       })
+
       socket.emit('ConfirmData', data)
       } catch (err) {
           console.log(err.massage)
@@ -109,7 +110,7 @@ const socketIo = (io) => {
     )
     socket.on('cancel', async (payload) => {
       try {
-        let data = transactions.update({ status: 'Cancel' }, {
+        let data = await transactions.update({ status: 'Cancel' }, {
           where: {id: payload}
         })
         socket.emit('cancelData', data)
@@ -120,9 +121,32 @@ const socketIo = (io) => {
     )
     socket.on('accept', async (payload) => {
       try {
-        let data = transactions.update({ status: 'On The Way' }, {
+        let data = await transactions.update({ status: 'On The Way' }, {
           where: {id: payload}
         })
+        data = await transactions.findOne({
+          where: { id: payload },
+          include:  {
+            model: products,
+            as: 'product',
+            through: {
+                model: order
+            },
+            attributes: {
+                exclude: ['createdAt','updatedAt']
+            }
+        }
+        })
+        console.log(data)
+        data = data.product.map(x => {
+          return ({
+            productsId: x.id,
+            userId: data.buyerId,
+            status: 'token'
+          })
+        })
+        await rating.bulkCreate(data)
+
         socket.emit('acceptData', data)
         } catch (err) {
             console.log(err.massage)

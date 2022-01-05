@@ -257,7 +257,7 @@ const DetailPage = () => {
                     </>
                     }
                 </DetailProduct>
-                <Rating/>
+                <Rating id={id}/>
             </Wrapper>
         </>
     )

@@ -32,6 +32,18 @@ router.patch('/user', userCheck,  uploadImg('image'), updateUser)
 router.patch('/userData', userCheck, updateUserData)
 router.delete('/user/:id', deleteUser)
 
+
+// Rating
+const {
+    token,
+    comments,
+    updateRating
+} = require('../controller/rating')
+
+router.patch('/rating/:id', userCheck, updateRating)
+router.get('/rating/token/:id', userCheck, token)
+router.get('/rating/:id' , comments)
+
 //product
 // TODO: delete product, edit product ,get product
 const {
