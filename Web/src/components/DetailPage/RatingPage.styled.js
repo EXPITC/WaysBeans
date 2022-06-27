@@ -34,7 +34,6 @@ export const InputSection = styled.textarea`
 export const Rate = styled.img`
     width:${props => props.R ? '30px' : '60px'};
     ${props => props.R? 'padding-top:4px;':  'cursor:pointer;'}
-   
 `
 
 export const ReviewsWrapper = styled.div`
@@ -57,16 +56,16 @@ export const RatingComments = styled.div`
     height:433px;
     padding-left:4px;
     &::-webkit-scrollbar-track{
-            box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-            background-color: #F5F5F5;
-        }
+        box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+        background-color: #F5F5F5;
+    }
     &::-webkit-scrollbar{
-            width: 4px;
-            background-color: #F5F5F5;
-        }
+        width: 4px;
+        background-color: #F5F5F5;
+    }
     &::-webkit-scrollbar-thumb{
-            background-color: var(--lightGrey);
-        }
+        background-color: var(--lightGrey);
+    }
 `
 export const Comments = styled.div`
     padding-left:4px;

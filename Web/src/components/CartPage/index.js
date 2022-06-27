@@ -22,14 +22,14 @@ const CartPage = () => {
     const { state, dispatch } = useContext(UserContext)
     const { user } = state
     
-    const [total, letTotal] = useState(null)
+    const [total, setTotal] = useState(null)
     const [order, setOrder] = useState([])
 
     const [transaction, setTransaction] = useState(null)
     const [refresh, setReresh] = useState(false)
     useEffect(async () => {
         await API.get('/order/count')
-            .then(res => letTotal(res.data.total))
+            .then(res => setTotal(res.data.total))
             .catch(err => handleError(err))
         await API.get('/transaction/active')
             .then(res => {setOrder(res.data.data.transactions[0].product); setTransaction(res.data.data.transactions[0]) })

@@ -1,7 +1,6 @@
 const { rating } = require('../../models')
 
 
-
 exports.token = async(req, res) => {
     try {
         const token = await rating.findOne({
@@ -43,7 +42,7 @@ exports.comments = async (req, res) => {
                 exclude: ['updateAt']
             },
             order: [
-                ['createdAt', 'DESC']
+                ['updatedAt', 'ASC']
             ]
         })
         res.status(200).send({

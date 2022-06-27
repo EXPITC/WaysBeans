@@ -1,6 +1,6 @@
 import { React, useState ,useContext , useEffect} from 'react';
 import { Link } from 'react-router-dom';
-import { API, handleError } from '../../config/api'
+import { API } from '../../config/api'
 import convertRupiah from 'rupiah-format'
 
 //components
@@ -62,6 +62,7 @@ const LandingPage = () => {
                 </Card>
         </Link>
     }
+
     return (
         <>
             {isLogin ? null :
@@ -71,13 +72,14 @@ const LandingPage = () => {
             </>  
             }
             <Header/>
-            <WrapMain>
+            <WrapMain >
                 <Banner src={banner}/>
-                <WrapFlex2/>
-                <WrapFlex3>
-                     {/* TODO: REPEAT */}
-                    {product.map((x) => _card(x))}
-                </WrapFlex3>
+                <WrapFlex2>
+                    <WrapFlex3>
+                        {/* TODO: REPEAT */}
+                        {product.map((x) => _card(x))}
+                    </WrapFlex3>
+                </WrapFlex2>
             </WrapMain>
         </>
     )

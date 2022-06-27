@@ -1,5 +1,5 @@
 'use strict';
-// npx sequelize-cli model:generate --name rating  --attributes transactionId:integer,userId:integer,status:string,comment:string,rating:integer
+// npx sequelize-cli model:generate --name rating  --attributes productsId:integer,userId:integer,status:string,comment:string,rating:integer
 const {
   Model
 } = require('sequelize');

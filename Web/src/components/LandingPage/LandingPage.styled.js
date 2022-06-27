@@ -192,25 +192,34 @@ export const WrapFlex = styled.div`
     display:flex;
     flex-direction: row;
     /* border:1px solid blue; */
+
 `
 export const WrapFlex2 = styled.div`
     display:flex;
-    flex-direction: row;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap:1rem;
-    margin-bottom: 91px;
+    padding-top:100px;
+    justify-content:center;
+    border:1px solid black;
     .nonee{
         text-decoration: none !important;
     }
 `
 export const WrapFlex3 = styled.div`
-   
+    animation: slide .8s ease-in forwards;
+    @keyframes slide {
+        from{
+            padding-top: 100%
+        }to{
+            padding-top: 0%
+        }
+    };
+   border:1px solid red;
+   width:80%;
+    /* justify-content:space-between; */
     display:flex;
     flex-direction: row;
     flex-wrap: wrap;
-    gap:1rem;
-    justify-content: space-between;
+    gap: 1rem;
+    justify-content: flex-start;
 `
 export const WrapMain = styled.div`
     margin:0 auto;
@@ -241,8 +250,9 @@ export const Card = styled.div`
     display:flex;
     flex-direction: column;
     overflow: hidden;
-   cursor: pointer;
-   box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
+    cursor: pointer;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
+    
     p {
         font-family: 'serif';
         font-style: normal;

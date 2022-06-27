@@ -12,30 +12,33 @@ const Rating = ({id}) => {
         comment: '',
         rating: ''
     })
+
     const getToken = () => {
         API.get(`/rating/token/${id}`)
             .then(res => setToken(res))
             .catch(err => handleError(err))
-        }
+    }
         
     const getComments = () => {
         API.get(`/rating/${id}`)
             .then(res => setComments(res.data.comments))
             .catch(err => handleError(err))
     }
+
     useEffect(()=> {
         getToken()
         getComments()
     }, [data])
-    console.log(comments)
-    console.log(token?.data?.token?.id)
+
     const [y, setY] = useState(0)
+
     useEffect(() => {
         setData({
             ...data,
             rating: y
         })
-    },[y])
+    }, [y])
+    
     const _Rate = ({state, R}) => {
         let container = [];
         let x = 5
@@ -65,12 +68,11 @@ const Rating = ({id}) => {
         }
         return container
     }
-    const _Reviews = () => {
-        let container = []
-    }
+
     const autogrow = (e) => {
         e.target.style.height = `${e.target.scrollHeight}px`;
     }
+
     const enter = (e) => {
         if (e.key === "Enter" || e.key === "NumpadEnter") {
             const config = {
@@ -94,6 +96,7 @@ const Rating = ({id}) => {
             }
         }
     }
+
     return (
         <Wrapper>
             {token?.status === 200 ? 
