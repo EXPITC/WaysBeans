@@ -11,8 +11,8 @@ import { UserContext } from "../../Context/userContext";
 import { API, handleError } from "../../config/api";
 
 import Icon from "../../img/Icon.svg";
-import Trolly from "../../img/Trolly.svg";
-import Shop from "../../img/shop.png";
+import Trolly from "../../img/coffee-bean.png";
+import Shop from "../../img/beans.png";
 import poly from "../../img/poly.svg";
 
 import { Head, TopFlex, Wrap, Polyy, Specialdrop } from "./Header.styled";
@@ -20,6 +20,8 @@ import DropDown from "../DropDown";
 
 import AuthModal from "../AuthModal";
 import AuthButtons from "../AuthButtons";
+
+const DEFAULT_PROFILE_URL = process.env.REACT_APP_DEFAULT_PROFILE;
 
 const Header = ({ refresh, isTroll = false }) => {
   const { state, dispatch } = useContext(UserContext);
@@ -87,27 +89,30 @@ const Header = ({ refresh, isTroll = false }) => {
             {isLogin && (
               <>
                 {isOwner && (
-                  <Link className="cart" to="/Store">
-                    <img height="50px" width="50px" src={Shop} alt="cart" />
+                  <Link className="cart mt-10" to="/Store">
+                    <img height="40px" width="40px" src={Shop} alt="cart" />
                   </Link>
                 )}
                 {!isOwner && isTroll && (
-                  <>
+                  <div className="hover-opacity05">
                     {isTotal > 0 && <p>{isTotal}</p>}
                     <Link className="cart" to="/Cart">
                       <img
                         src={Trolly}
                         alt="trolly"
-                        width="35px"
-                        height="33px"
+                        width="38px"
+                        height="38px"
                       />
                     </Link>
-                  </>
+                  </div>
                 )}
                 <img
                   className="profile"
                   onClick={toggle}
-                  src={user.image.replace("q_auto:good", "q_auto:eco")}
+                  src={
+                    user.image.replace("q_auto:good", "q_auto:eco") ||
+                    DEFAULT_PROFILE_URL
+                  }
                   alt="profile"
                 />
               </>
