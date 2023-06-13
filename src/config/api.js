@@ -1,21 +1,13 @@
 import axios from "axios";
 
 export const API = axios.create({
-  baseURL: "http://localhost:5001/api/v1/",
+  baseURL: process.env.REACT_APP_API_ENDPOINT,
   // Disable for dev local
-  // withCredentials: true,
+  withCredentials: true,
   headers: {
     "Access-Control-Allow-Origin": process.env.REACT_APP_API_ENDPOINT,
   },
 });
-
-// export const setAuthToken = (token) => {
-//     if (token) {
-//         API.defaults.headers.common['Authorization'] = `Bearer ${token}`
-//     } else {
-//         delete API.defaults.headers.common['Authorization']
-//     }
-// }
 
 export const handleError = (err) => {
   if (err.response) {
