@@ -1,227 +1,374 @@
-import { React ,useContext ,useState ,useEffect} from 'react';
-import { API , handleError} from '../../config/api'
-import { UserContext } from '../../Context/userContext'
-import convertRupiah from 'rupiah-format'
-import {io} from 'socket.io-client'
-import Header from '../Header';
-import Clip from '../../img/clip.svg'
-import Icon from '../../img/Icon.svg'
+import { React, useState, useEffect, useMemo } from "react";
+import { API, handleError } from "../../config/api";
+import convertRupiah from "rupiah-format";
+import Header from "../Header";
+import Icon from "../../img/Icon.svg";
 
-import { Wrapper, Preview , InputSide, Flex, FlexCollum, Pp ,Popout ,Modal ,WrapperFlex} from './Checkout.styled'
-import { Navigate } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import {
+  Wrapper,
+  Preview,
+  InputSide,
+  Flex,
+  FlexCollum,
+  Pp,
+  Popout,
+  Modal,
+  WrapperFlex,
+} from "./Checkout.styled";
+import { useNavigate, useLocation } from "react-router-dom";
+import convertStamp from "../../utils/convertStamp";
+import useSocket from "../../config/socket";
 
-let socket;
-const AddProduct = () => {
-    const navigate = useNavigate()
-    const [orderStatus ,setOrderStatus] = useState(false)
-    const { state } = useContext(UserContext)
-    const { user } = state
-    const [refresh,setRefresh]= useState(false)
-    const [order, setOrder] = useState([])
-    const [transaction, setTransaction] = useState([])
-    const [total, setTotal] = useState([])
-    const [form, setForm] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        address: '',
-        postcode: '',
-        attachment: '',
-        status: 'Waiting Approve',
-    })
-    let [pre , setPre] = useState(Clip)
-    const handleChange = (e) => {
-        setForm({
-            ...form,
-            [e.target.name]: e.target.type === "file" ? e.target.files : e.target.value,
-        });
-        if (e.target.type === "file") {
-            try {
-                setPre(URL.createObjectURL(e.target.files[0]));
-            } catch (e) {
-                setPre(Clip)
-            }
-        }
-    }
-    const handleSubmit = async (e) => {
-        try {
-            e.preventDefault();
-            const config = {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            }
-            const formData = new FormData();
-            formData.set('name', form.name)
-            if (form.image) {
-                formData.set("image", form?.image[0], form?.image[0]?.name);
-            }
-            formData.set('email', form.email)
-            formData.set('phone', form.phone)
-            formData.set('status', form.status)
-            formData.set('address', form.address)
-            formData.set('postcode', form.postcode)
-            formData.set('attachment', form. attachment)
-            await API.patch(`/transaction/${transaction.id}`, formData ,config)
-            setForm({
-                name: '',
-                email: '',
-                phone: '',
-                address: '',
-                postcode: '',
-                attachment: '',
-                status: 'Waiting Approve',
-            })
-            setPre(Clip)
-            setOrderStatus(true)
-            socket.emit('newtransactions', 'catch')
-            socket.emit('toOrder')
-        } catch (err) {
-            handleError(err)
-        }
-    }
-   
-    useEffect(() => {
-        socket = io('http://localhost:5000', {
-            auth: {
-                token: localStorage.getItem("token") 
-            },
-            query: {
-                id: state.user.id
-            }
+const WAITING_APPROVE = "Waiting Approve";
+const DEFAULT_FORM = {
+  name: "",
+  email: "",
+  phone: "",
+  address: "",
+  postcode: "",
+  // attachment: "",
+};
+const PAYMENT_CLIENT_KEY = process.env.REACT_APP_CLIENT_KEY;
+const SNAP_SRC_URL = process.env.REACT_APP_SNAP_SRC_URL;
+const SHIPPING_COST = parseInt(process.env.REACT_APP_SHIPPING_COST);
+
+const CheckoutPage = () => {
+  // For navigate
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isHistory = location.key !== "default";
+
+  const socket = useSocket();
+
+  const [isLoading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // Init payment
+    const paymentScriptElement = document.createElement("script");
+    paymentScriptElement.src = SNAP_SRC_URL;
+    paymentScriptElement.setAttribute("data-client-key", PAYMENT_CLIENT_KEY);
+    paymentScriptElement.async = true;
+
+    // Append payment element to the body
+    document.body.appendChild(paymentScriptElement); // integrate with the handle payment
+
+    console.info(
+      "%cfor completely follow along waysbeans lifecyle, please refer to the link below for full payment testing, thankyou ( ✧≖ ͜ʖ≖)",
+      "background-color: #F6E6DA; color: #613d2b; font-weight: bold; font-size: medium; text-align: center; overflow: hidden; border-radius: 3px; padding: 5px;"
+    );
+    console.info(
+      "%chttps://docs.midtrans.com/docs/testing-payment-on-sandbox",
+      "background-color: #613d2b; color: #F6E6DA;padding: 5px; overflow: hidden; border-radius: 2px;"
+    );
+
+    // Connect socket
+    socket.on("connect", () => {
+      console.info("socket alive: ", socket.connected);
+    });
+
+    socket.on("connect_error", (err) => {
+      console.error(err.message);
+    });
+
+    return () => {
+      // remove payment element
+      document.body.removeChild(paymentScriptElement);
+
+      // disconnecting the socket
+      socket.disconnect();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // About the transaction data
+  const [order, setOrder] = useState([]);
+  const [transaction, setTransaction] = useState({ status: "Order" });
+  const isOrderWaitingApprove = useMemo(
+    () => (transaction.status === WAITING_APPROVE ? true : false),
+    [transaction]
+  );
+
+  // Form for update Transaction payment data
+  const [form, setForm] = useState(DEFAULT_FORM);
+  // Pre render Image *manual payment
+  // const [pre, setPre] = useState(Clip);
+
+  // Populate transaction data
+  useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+    (async () => {
+      await API.get("/transaction/active", { signal })
+        .then((res) => {
+          const t = res.data.data.transaction;
+          const p = t.product;
+
+          setOrder(p);
+          setTransaction(t);
+
+          // Set form default value from transaction
+          setForm((prev) => ({
+            ...prev,
+            name: t.name || "",
+            email: t.email || "",
+            phone: t.phone || "",
+            address: t.address || "",
+            postcode: t.postcode || "",
+          }));
         })
-        socket.on('connect', () => {
-            console.log(socket);
-        })
-        socket.emit('toOrder', 'catch')
-        // socket.emit('newtransactions', 'catch')
-        socket.on("connect_error", (err) => {
-            console.error(err.message); 
+        .catch((err) => {
+          handleError(err);
+          navigate("/");
         });
-        
-        return () => {
-            socket.disconnect()
-        }
-    }, [])
-    useEffect(async () => {
-        await API.get('/order/count')
-            .then(res => setTotal(res.data.total))
-            .catch(err => handleError(err))
-        await API.get('/transaction/active')
-            .then(res => {
-                setOrder(res.data.data.transactions[0].product);
-                setTransaction(res.data.data.transactions[0])
-            })
-            .catch(err => { handleError(err); navigate('/');})
-    }, [])
-    useEffect(() => {
-        if (transaction.status === 'Waiting Approve' ) {
-            setOrderStatus(true)
-        }
-    },[transaction])
-    const check = (state,x) => {
-        let y = x.split('T')[0]
-        let z = y.split('-')
-        switch (state) {
-            case 'day': 
-                return (new Date(z[0], z[1], z[2]).toLocaleString('en-us', { weekday: 'long' }))
-            case 'month': 
-                return (new Date(z[0], z[1] - 1, z[2]).toLocaleString('en-us', { month: 'long' }))
-            case 'oneDay':
-                return z[2]
-            case 'year':
-                return z[0]
-        }
-        
-    }
-  
-    return (
-        <>
-            {orderStatus ? <Popout>
-                <Modal>
-                    <p>Thank you for ordering in us, please wait 1 x 24 hours to verify you order</p>
-                </Modal>
-            </Popout> : null}
-        <>
-            <Header noTroll/>
-            <Wrapper>
-                <InputSide>
-                    <h2>Shipping</h2>
-                    <input
-                        type="text"
-                        name="name"
-                        placeholder="Name"
-                        className="first"
-                        onChange={handleChange}
-                        value= {form.name}
-                    />
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="Email"
-                        className="first"
-                        onChange={handleChange}
-                        value= {form.email}
-                    />
-                    <input
-                        className="third"
-                        type="text"
-                        name="phone"
-                        placeholder="Phone"
-                        onChange={handleChange}
-                        value= {form.phone}
-                    />
-                     <textarea
-                        type="text"
-                        name="address"
-                        placeholder="Address"
-                        className="first"
-                        onChange={handleChange}
-                        value={form.address}
-                    />
-                      <input
-                        className="third"
-                        type="text"
-                        name="postcode"
-                        placeholder="Post Code"
-                        onChange={handleChange}
-                        value= {form.postcode}
-                    />
-                    <label className="second" htmlFor='imgFile'>Attache of transaction
-                    <img src={pre}/>
-                        <input type="file" name='image' id="imgFile" onChange={handleChange} hidden/>
-                    </label>
-                </InputSide>
-                <WrapperFlex>
-                <Flex >
-                    {order.map((x) => {
-                        return (
-                        <>
-                        <Flex w>
-                        <Preview src={x.img}/>
-                        <FlexCollum btwn>
-                            <div>
-                                <h1>{x.title}</h1>
-                                <Pp n b>{check('day',x.order.createdAt)} </Pp>
-                                <Pp n a>{check('oneDay',x.order.createdAt)} ,{check('month',x.order.createdAt)} ,{check('year',x.order.createdAt)}</Pp>
-                            </div>
-                            <Pp >Price : {convertRupiah.convert(x.price)}</Pp>
-                            <Pp >Qty : {x.order.qty}</Pp>
-                            <Pp bb b>Sub Total : {convertRupiah.convert(x.price * x.order.qty)}</Pp>
-                        </FlexCollum>
-                        <Preview I src={Icon}/>
-                        </Flex>
-                        </>
-                        )
-                    })}
-                        <button onClick={handleSubmit}>Pay</button>
-                </Flex>
-                </WrapperFlex>
-            </Wrapper>
-        </>
-        </>
-    )
-}
+    })();
+    return () => controller.abort();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-export default AddProduct
+  // handles
+  const handleChange = (e) => {
+    setForm((prev) => ({
+      ...prev,
+      [e.target.name]:
+        e.target.type === "file" ? e.target.files : e.target.value,
+    }));
+    // Manual payment image
+    // if (e.target.type === "file") {
+    //   try {
+    //     setPre(URL.createObjectURL(e.target.files[0]));
+    //   } catch (e) {
+    //     setPre(Clip);
+    //   }
+    // }
+  };
+
+  const handlePay = async (e) => {
+    if (!PAYMENT_CLIENT_KEY || !SNAP_SRC_URL || !SHIPPING_COST)
+      return console.error("cannot retrive payment envoriment variable");
+    const transactionId = transaction?.id;
+    if (!transactionId) return console.error("cannot get transaction id");
+
+    if (isLoading) return;
+
+    // Make sure form not empty
+    for (const property in form) {
+      if (form[property] === "") return;
+    }
+
+    try {
+      setLoading(true);
+      e.preventDefault();
+      const config = {
+        headers: {
+          // "Content-Type": "multipart/form-data",
+          "Content-Type": "application/json",
+        },
+      };
+
+      // This comment for manual payment
+
+      // const formData = new FormData();
+      // If manual payment
+      // Init multipart form data
+      // if (form.attachment) {
+      //   formData.set(
+      //     "attachment",
+      //     form?.attachment[0],
+      //     form?.attachment[0]?.name
+      //   );
+      // }
+      // if (form.name !== transaction.name) formData.set("name", form.name);
+      // if (form.email !== transaction.email) formData.set("email", form.email);
+      // formData.set("phone", form.phone);
+      // formData.set("address", form.address);
+      // formData.set("postcode", form.postcode);
+
+      // Update transaction
+      // if use manual payment use formData with multipart for img
+      await API.patch(`/transaction/${transactionId}`, form, config);
+
+      const handleSuccessPayment = () => {
+        socket.emit("order", transactionId); // Trigger emit `socket.on("orderData")`;
+        socket.on("orderData", (data) => {
+          if (!data)
+            return console.error(
+              "can't get order Data after update transaction"
+            );
+
+          setTransaction(data);
+          setLoading(false);
+          socket.emit("newTransaction"); // Send new transaction to admin
+        }); // Takes emit `socket.emit("order")` to check transaction status;
+      };
+
+      const paymentData = {
+        ...transaction,
+        total:
+          order.reduce((total, b) => total + b.price * b.order.qty, 0) +
+          SHIPPING_COST,
+      };
+
+      socket.emit("pay", paymentData);
+      socket.on("paymentToken", (token) => {
+        if (!token) return console.error("payment token cannot be retrive");
+
+        window?.snap.pay(token, {
+          onSuccess: handleSuccessPayment,
+          onPending: (result) => {
+            setLoading(false);
+            console.info("pending transaction: ", result);
+          },
+          onError: (err) => {
+            setLoading(false);
+            console.error("error transaction: ", err);
+          },
+          onClose: () => {
+            setLoading(false);
+            console.info(
+              "Customer close the popup window without finishing the payment"
+            );
+          },
+        });
+      });
+    } catch (err) {
+      setLoading(false);
+      handleError(err);
+    }
+  };
+
+  return (
+    <>
+      {isOrderWaitingApprove && (
+        <Popout onClick={() => (isHistory ? navigate(-1) : navigate("/"))}>
+          <Modal>
+            <p>
+              Thank you for ordering in us, please wait 1 x 24 hours to verify
+              you order
+            </p>
+          </Modal>
+        </Popout>
+      )}
+      <>
+        <Header isTroll={false} />
+        <Wrapper>
+          <InputSide>
+            <h2>Shipping</h2>
+            <input
+              required
+              type="text"
+              name="name"
+              placeholder="Name"
+              onChange={handleChange}
+              value={form.name}
+            />
+            <input
+              required
+              type="email"
+              name="email"
+              placeholder="Email"
+              onChange={handleChange}
+              value={form.email}
+            />
+            <input
+              required
+              type="number"
+              name="phone"
+              placeholder="Phone"
+              onChange={(e) => {
+                // prevent negative number and set limit 4 digit
+                e.target.value =
+                  Math.abs(e.target.value) >= 0
+                    ? Math.abs(e.target.value.slice(0, 13))
+                    : undefined;
+
+                handleChange(e);
+              }}
+              value={form.phone}
+            />
+            <textarea
+              required
+              type="text"
+              name="address"
+              placeholder="Address"
+              onChange={handleChange}
+              value={form.address}
+            />
+            <input
+              required
+              className="postcode"
+              type="number"
+              name="postcode"
+              placeholder="Post Code"
+              onChange={(e) => {
+                // prevent negative number and set limit 4 digit
+                e.target.value =
+                  Math.abs(e.target.value) >= 0
+                    ? Math.abs(e.target.value.slice(0, 4))
+                    : undefined;
+                handleChange(e);
+              }}
+              value={form.postcode}
+            />
+            {
+              // Manual transaction prove
+              // <label className="second" htmlFor="imgFile">
+              //   Attache of transaction
+              //   <img src={pre} alt="payment proof" />
+              //   <input
+              //     required
+              //     type="file"
+              //     name="attachment"
+              //     id="imgFile"
+              //     onChange={handleChange}
+              //     hidden
+              //   />
+              // </label>
+            }
+          </InputSide>
+          <WrapperFlex>
+            <Flex wrapper>
+              {order.map((product) => {
+                return (
+                  <Flex w key={product.img}>
+                    <Preview
+                      src={product.img.replace("q_auto:good", "q_auto:eco")}
+                    />
+                    <FlexCollum btwn>
+                      <div>
+                        <h1>{product.title}</h1>
+                        <Pp n b>
+                          {convertStamp(product.order.createdAt)[0]}{" "}
+                        </Pp>
+                        <Pp n a>
+                          {convertStamp(product.order.createdAt)[1]}
+                        </Pp>
+                      </div>
+                      <Pp>Qty : {product.order.qty}</Pp>
+                      <Pp>Price : {convertRupiah.convert(product.price)}</Pp>
+                      <Pp bb b>
+                        Sub Total :{" "}
+                        {convertRupiah.convert(
+                          product.price * product.order.qty
+                        )}
+                      </Pp>
+                    </FlexCollum>
+                    <Preview I src={Icon} />
+                  </Flex>
+                );
+              })}
+            </Flex>
+            <button
+              type="submit"
+              onClick={isOrderWaitingApprove ? null : handlePay}
+            >
+              {isLoading ? "Loading..." : "Pay"}
+            </button>
+            *hint: console log
+          </WrapperFlex>
+        </Wrapper>
+      </>
+    </>
+  );
+};
+
+export default CheckoutPage;

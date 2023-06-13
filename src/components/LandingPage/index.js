@@ -1,89 +1,90 @@
-import { React, useState ,useContext , useEffect} from 'react';
-import { Link } from 'react-router-dom';
-import { API } from '../../config/api'
-import convertRupiah from 'rupiah-format'
+import { React, useState, useContext, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { API, handleError } from "../../config/api";
+import convertRupiah from "rupiah-format";
 
 //components
-import Login from '../Login';
-import Register from '../Register';
-import DropDown from '../DropDown';
-import Header from '../Header'
+import Header from "../Header";
 
 //img
-import poly from '../../img/poly.svg';
-import banner from '../../img/banner.png'
-import Icon from '../../img/Icon.svg';
-import Trolly from '../../img/Trolly.svg';
-import {WrapperYellow , OneLineFlexTop ,Banner , TextAndPizza , WrapFlex , WrapFlex2 , WrapFlex3 , Card , Text ,ImgPizza , ImgProfile , ImgTrolly, WrapMain ,  Polyy} from './LandingPage.styled';
+import banner from "../../img/banner.png";
 
-import { UserContext } from '../../Context/userContext';
+import {
+  Banner,
+  WrapFlex,
+  WrapFlex2,
+  Card,
+  WrapMain,
+} from "./LandingPage.styled";
+import { UserContext } from "../../Context/userContext";
+import { AuthModalContext } from "../../Context/authModalContext";
 
+const ProductsCard = (isLogin, product, authModalToggle) => {
+  const ProductCard = () => (
+    <Card
+      key={product.id + product.title}
+      onClick={isLogin ? null : authModalToggle}
+    >
+      <img
+        src={product.img.replace("q_auto:good", "q_auto:eco")}
+        alt={product.title}
+      />
+      <h3>{product.title}</h3>
+      <p>{convertRupiah.convert(product.price)}</p>
+      <p>Stock: {product.stock}</p>
+    </Card>
+  );
+
+  if (!isLogin) return <ProductCard key={product.id + product.title + 2} />;
+  return (
+    <Link
+      key={product.id + product.title + 3}
+      to={`/detail/${product.id}`}
+      style={{ textDecoration: "none" }}
+    >
+      <ProductCard />
+    </Link>
+  );
+};
 
 const LandingPage = () => {
-    let [show, setShow] = useState(false);
-    let [showR, setShowR] = useState(false);
-    const toggle = () => (setShow(!show), setShowR(false));
-    const toggleR = () => (setShowR(!showR), setShow(false));
-    const Cancel = () => setShowR(!showR);
-    const CancelL = () => setShow(!show);
+  const { state } = useContext(UserContext);
+  const { isLogin } = state;
 
-    const { state, dispatch } = useContext(UserContext)
-    const { isLogin, user } = state
-    // let which = true
-    // if (user.role === 'owner') {
-    //     which = false
-    // }
-    // const [total, letTotal] = useState(null)
-    // useEffect(async() => {
-    //         await API.get('/order/count')
-    //             .then(res => letTotal(res.data.total))
-    //             .catch(err => handleError(err))
-    // }, [])
-    const [product, setProduct] = useState([])
-    useEffect(async() => {
-        await API.get('/products/all')
-            .then((res) => { setProduct(res.data.data)})
-    }, [])
-    const _card = (x) => {
-        if (!isLogin) {
-            return <Card key={x?.id} onClick={toggle}>
-            <img src={x.img} alt={x?.title} />
-            <h3>{x?.title}</h3>
-            <p>{convertRupiah.convert(x.price)}</p>
-            <p>Stock: {x.stock}</p>
-            </Card>
-        }
-        return <Link to={`/detail/${x.id}`} style={{ textDecoration: 'none' }}>
-                <Card key={x?.id} onClick={toggle}>
-                <img src={x.img} alt={x?.title} />
-                <h3>{x?.title}</h3>
-                <p>{convertRupiah.convert(x.price)}</p>
-                <p>Stock: {x.stock}</p>
-                </Card>
-        </Link>
-    }
+  const { dispatch } = useContext(AuthModalContext);
+  const authModalToggle = () => dispatch("openLoginModal");
 
-    return (
-        <>
-            {isLogin ? null :
-            <>
-                    {show ? (<Login show={show} Cancel={CancelL} toggle={toggleR} />) : null}
-                    {showR ? (<Register showR={showR} Cancel={Cancel} toggle={toggle}  />) : null}
-            </>  
-            }
-            <Header/>
-            <WrapMain >
-                <Banner src={banner}/>
-                <WrapFlex2>
-                    <WrapFlex3>
-                        {/* TODO: REPEAT */}
-                        {product.map((x) => _card(x))}
-                    </WrapFlex3>
-                </WrapFlex2>
-            </WrapMain>
-        </>
-    )
-}
+  const [products, setProducts] = useState([]);
+  useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+    (async () => {
+      await API.get("/products/all", { signal })
+        .then((res) => {
+          setProducts(res.data.data);
+        })
+        .catch((err) => {
+          handleError(err);
+        });
+    })();
+    return () => controller.abort();
+  }, []);
 
+  return (
+    <>
+      <Header isTroll={true} />
+      <WrapMain>
+        <Banner src={banner} alt="banner" />
+        <WrapFlex>
+          <WrapFlex2>
+            {products.map((product) =>
+              ProductsCard(isLogin, product, authModalToggle)
+            )}
+          </WrapFlex2>
+        </WrapFlex>
+      </WrapMain>
+    </>
+  );
+};
 
 export default LandingPage;

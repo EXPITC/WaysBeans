@@ -1,41 +1,43 @@
-import styled from 'styled-components';
-
+import styled from "styled-components";
 
 export const Head = styled.div`
-    position:sticky;
-    top:0;
-    background: #F5F5F5;
-    height: 91px;
-    .drop{
-        position:absolute!important;
-        right:10px !important;
-    }
-    box-shadow: 0px 10px 30px 0px #00000040;
-`
+  position: sticky;
+  z-index: 99;
+  top: 0;
+  background: #f5f5f5;
+  height: 91px;
+  .drop {
+    position: absolute !important;
+    right: 10px !important;
+  }
+  box-shadow: 0px 10px 30px 0px #00000040;
+`;
 export const TopFlex = styled.div`
-    /* border:1px solid black; */
-    height: inherit;
-    margin: 0 auto;
-    display:flex;
-    justify-content: space-between;
-    align-items: center;
-    width:95%;
-    .shake {
-        @keyframes shakes {
-                0%{
-                    transform:rotateZ(-10deg);
-                }40%{
-                    transform:rotateZ(6deg);
-                }100%{
-                    transform:rotateZ(-10deg);
-                }
-        }
-        &:hover {
-            animation:shakes 1s ease forwards;
-            opacity: 0.5;
-        }
+  /* border:1px solid black; */
+  height: inherit;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 95%;
+  .shake {
+    @keyframes shakes {
+      0% {
+        transform: rotateZ(-10deg);
+      }
+      40% {
+        transform: rotateZ(6deg);
+      }
+      100% {
+        transform: rotateZ(-10deg);
+      }
     }
-`
+    &:hover {
+      animation: shakes 1s ease forwards;
+      opacity: 0.5;
+    }
+  }
+`;
 
 export const Wrap = styled.div`
     display: flex;
@@ -63,7 +65,7 @@ export const Wrap = styled.div`
     .profile {
         width:60px;
         height:60px;
-        border:1px solid black;
+        border:1px solid #613D2B;
         border-radius:50%;
         opacity:1 !important;
         cursor:pointer;
@@ -95,35 +97,35 @@ export const Wrap = styled.div`
             background:transparent;
         }
     }
-`
+`;
 export const Polyy = styled.div`
-    position:absolute;
-    right:150px;
-    top: 90px;
-    .poly {
-        opacity:0;
-        position:absolute;
-        animation: a 1s ease-out forwards;
-        animation-delay: 0.3s;
-        @keyframes a { 
-        0%{
-            opacity:0;
-            transform: translateX(60px)translateY(0px);
-        }
-        80%{
-            transform: translateX(60px)translateY(0px);
-        }
-        90%{
-            opacity:0.5;
-        }
-        100% {
-            transform: translateX(60px)translateY(-30px);
-            opacity:1;
-        }
-        }
-    }
-`
-export const Specialdrop = styled.div`
+  position: absolute;
+  right: 150px;
+  top: 90px;
+  .poly {
+    opacity: 0;
     position: absolute;
-    right:-40px;
-`
+    animation: a 1s ease-out forwards;
+    animation-delay: 0.3s;
+    @keyframes a {
+      0% {
+        opacity: 0;
+        transform: translateX(60px) translateY(0px);
+      }
+      80% {
+        transform: translateX(60px) translateY(0px);
+      }
+      90% {
+        opacity: 0.5;
+      }
+      100% {
+        transform: translateX(60px) translateY(-30px);
+        opacity: 1;
+      }
+    }
+  }
+`;
+export const Specialdrop = styled.div`
+  position: absolute;
+  right: -40px;
+`;

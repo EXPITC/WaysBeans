@@ -1,14 +1,21 @@
-import React, { useState, useEffect } from 'react'
-import QRCode from 'qrcode'
-const Barcode = ({ src}) => {
+import React, { useState, useEffect } from "react";
+import QRCode from "qrcode";
+const Barcode = ({ src }) => {
+  const [data, setData] = useState("");
+  useEffect(() => {
+    QRCode.toDataURL(src).then((qr) => setData(qr));
+  }, [src]);
 
-    const [data, setData] = useState('');
-    useEffect(() => {
-        QRCode.toDataURL(src).then(x => setData(x))            
-    }, [])
-    
-    return <img src={data} style={{width: '50px',
-        height: '50px' }}/>
-}
+  return (
+    <img
+      src={data}
+      style={{
+        width: "50px",
+        height: "50px",
+      }}
+      alt="barcode payment"
+    />
+  );
+};
 
-export default Barcode
+export default Barcode;

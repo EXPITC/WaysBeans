@@ -1,101 +1,135 @@
-import { React, useEffect, useState ,useContext} from 'react';
-import { Link } from 'react-router-dom';
-import { UserContext } from '../../Context/userContext';
-import {API, handleError} from '../../config/api'
+import {
+  React,
+  useEffect,
+  useState,
+  useContext,
+  useMemo,
+  useCallback,
+} from "react";
+import { Link } from "react-router-dom";
+import { UserContext } from "../../Context/userContext";
+import { API, handleError } from "../../config/api";
 
-import Icon from '../../img/Icon.svg';
-import Trolly from '../../img/Trolly.svg';
-import Shop from '../../img/shop.png';
-import poly from '../../img/poly.svg';
+import Icon from "../../img/Icon.svg";
+import Trolly from "../../img/Trolly.svg";
+import Shop from "../../img/shop.png";
+import poly from "../../img/poly.svg";
 
-import { Head, TopFlex, Wrap ,Polyy ,Specialdrop} from './Header.styled';
-import DropDown  from '../DropDown';
-import Login from '../Login';
-import Register from '../Register';
+import { Head, TopFlex, Wrap, Polyy, Specialdrop } from "./Header.styled";
+import DropDown from "../DropDown";
 
-const Header = ({ trigger, noTroll }) => {
-    let [showL, setShowL] = useState(false);
-    let [showR, setShowR] = useState(false);
-    let [show, setShow] = useState(false);
-    const toggleL = () => (setShowL(!showL), setShowR(false), setShow(false));
-    const toggleR = () => (setShowR(!showR), setShowL(false),setShow(false));
+import AuthModal from "../AuthModal";
+import AuthButtons from "../AuthButtons";
 
-    const CancelR = () => setShowR(!showR);
-    const CancelL = () => setShowL(!showL);
+const Header = ({ refresh, isTroll = false }) => {
+  const { state, dispatch } = useContext(UserContext);
+  const { user, isLogin, isUserOrder } = state;
 
-    const {state, dispatch} = useContext(UserContext)
-    const toggle = () => (setShow(!show));
-    const { user ,isLogin} = state
-    let isOwner = false
-    if (user.role === 'owner') {
-        isOwner = true
-    }
-    const [total, letTotal] = useState(null)
-    useEffect(async() => {
-            await API.get('/order/count')
-                .then(res => letTotal(res.data.total))
-                .catch(err => handleError(err))
-    }, [trigger])
-    const [resto, setResto] = useState(null)
-    // const [restoId, setRestoId] =  useState(null)
-    useEffect(async () => {
-        await API.get(`/resto` )
-            .then((res) => { setResto(res.data.data.resto.data)})
-            .catch((err) => { handleError(err) })
-    }, [])
-    return (
-        <>
-            {isLogin ? null :
-            <>
-                    {showL ? (<Login show={showL} Cancel={CancelL} toggle={toggleR} />) : null}
-                    {showR ? (<Register showR={showR} Cancel={CancelR} toggle={toggleL}  />) : null}
-            </>  
-            }
-        <Head>
-            <TopFlex>
-                <Link to="/">
-                <img src={Icon} className="shake"/>
-                </Link>
-                <Wrap>
-                        {isLogin ? <>
-                            {isOwner ? <Link className="cart" to="/Store">
-                            <img style={{width: '50px', height: '50px'}} src={Shop} />
-                                </Link>:
-                            noTroll ? null :
-                            <>
-                                {total ? <p>{total}</p> : null}
-                                <Link className="cart" to="/Cart">
-                                    <img src={Trolly} />
-                                </Link>
-                            </>
-                            }
-                            <img className='profile' onClick={toggle} src={user.image} />
-                    </>
-                    :
-                    <>
-                            <button onClick={toggleL} className="login">Login</button>
-                            <button onClick={toggleR}>Register</button>
-                    </>
-                    }
-                   
-                </Wrap>
-            </TopFlex>
-                {isLogin ? <>
-                    {show ? <>
-                        <Polyy>
-                            <div className="poly">
-                                <img src={poly} />
-                            </div>
-                        </Polyy>
-                        <Specialdrop>
-                            <DropDown className="drop" logout />
-                        </Specialdrop>
-                    </>
-                        : null}
-                </> : null}
-        </Head>
-        </>
-    )
-}
+  const [show, setShow] = useState(false);
+  const toggle = useCallback(() => setShow((prev) => !prev), []);
 
-export default Header
+  const isOwner = useMemo(
+    () => (user.role === "owner" ? true : false),
+    [user?.role]
+  );
+
+  const [isTotal, setTotal] = useState(0);
+
+  useEffect(() => {
+    if (!isLogin) return;
+    if (!isTroll) return;
+
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    (async () => {
+      await API.get("/order/count", { signal })
+        .then((res) => {
+          setTotal(res.data.total);
+
+          // This dispatch set for access cart page,
+          // for more can be seen in  router setup
+          if (!res || res.data.total === 0)
+            return dispatch({ status: "isUserOrder", payload: false });
+
+          // In case isUserOrder status alredy true we do not need to dispatch
+          if (isUserOrder === true) return;
+
+          dispatch({
+            status: "isUserOrder",
+            payload: true,
+          });
+        })
+        .catch((err) => {
+          dispatch({ status: "isUserOrder", payload: false });
+          handleError(err);
+        });
+    })();
+
+    return () => controller.abort();
+  }, [refresh, isLogin, isTroll, dispatch, isUserOrder]);
+
+  return (
+    <>
+      <AuthModal />
+      <Head>
+        <TopFlex>
+          <Link to="/">
+            <img
+              src={Icon}
+              className="shake"
+              alt="logo"
+              width="100%"
+              height="auto"
+            />
+          </Link>
+          <Wrap>
+            {isLogin && (
+              <>
+                {isOwner && (
+                  <Link className="cart" to="/Store">
+                    <img height="50px" width="50px" src={Shop} alt="cart" />
+                  </Link>
+                )}
+                {!isOwner && isTroll && (
+                  <>
+                    {isTotal > 0 && <p>{isTotal}</p>}
+                    <Link className="cart" to="/Cart">
+                      <img
+                        src={Trolly}
+                        alt="trolly"
+                        width="35px"
+                        height="33px"
+                      />
+                    </Link>
+                  </>
+                )}
+                <img
+                  className="profile"
+                  onClick={toggle}
+                  src={user.image.replace("q_auto:good", "q_auto:eco")}
+                  alt="profile"
+                />
+              </>
+            )}
+            <AuthButtons />
+          </Wrap>
+        </TopFlex>
+        {isLogin && show && (
+          <>
+            <Polyy>
+              <div className="poly">
+                <img src={poly} alt="poly" />
+              </div>
+            </Polyy>
+            <Specialdrop>
+              <DropDown className="drop" />
+            </Specialdrop>
+          </>
+        )}
+      </Head>
+    </>
+  );
+};
+
+export default Header;
