@@ -43,11 +43,17 @@ export const Wrap = styled.div`
     display: flex;
     justify-content:center;
     align-items:center;
+    .hover-opacity05 {
+      position: relative;
+      &:hover {
+        opacity:0.5;
+      }
+    }
+    .mt-10 {
+      margin-top:10px;
+    }
     img{
-        margin-left:23px;
-        &:hover{
-            opacity:0.5;
-        }
+      margin-left:23px;
     }
     p{
         background:red;
@@ -58,7 +64,7 @@ export const Wrap = styled.div`
         color:white;
         text-align:center;
         margin-top: 0px;
-        margin-left: -40px !important;
+        transform: translate(45px, 3px);
         z-index:99 !important;
         position:absolute !important;
     }
