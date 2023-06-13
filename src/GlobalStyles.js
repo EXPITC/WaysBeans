@@ -1,6 +1,6 @@
-import { createGlobalStyle } from 'styled-components';
+import { createGlobalStyle } from "styled-components";
 
-export const GlobalStyles = createGlobalStyle `
+export const GlobalStyles = createGlobalStyle`
     :root {
         --maxWidth: 1280px;
         --white: #fff;
@@ -15,7 +15,6 @@ export const GlobalStyles = createGlobalStyle `
         --mainBrown: #613D2B;
     }
     * {
-        @import url('https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@800&family=Shippori+Antique+B1&display=swap');
         box-sizing: border-box;
         font-family: Abhaya Libre ExtraBold;
     }

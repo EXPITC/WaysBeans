@@ -1,0 +1,16 @@
+{
+  "short_name": "Ways Beans",
+  "name": "Ways Beans coffe bean shop",
+  "icons": [
+    {
+      "src": "Icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#613D2B",
+  "background_color": "#E5E5E5"
+}

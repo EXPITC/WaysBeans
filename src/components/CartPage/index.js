@@ -1,170 +1,276 @@
-import { React, useState, useEffect ,useContext} from 'react';
-import { API, handleError } from '../../config/api'
-import convertRupiah from 'rupiah-format';
-import { UserContext } from '../../Context/userContext';
-import { io } from 'socket.io-client'
-import {Link } from 'react-router-dom'
+import { React, useState, useEffect, useMemo, useContext } from "react";
+import { API, handleError } from "../../config/api";
+import convertRupiah from "rupiah-format";
+// import { UserContext } from "../../Context/userContext";
+// import { io } from "socket.io-client";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
-import { Wrapper ,WrapContent , WrapOrder ,Orderbtn , Pp , WrapOrder2, Flex , FlexCollum , Wrap1 , Wrap2 , Wrap3} from './CartPage.styled'
+import {
+  Wrapper,
+  // WrapContent,
+  WrapOrder,
+  Orderbtn,
+  Pp,
+  WrapOrder2,
+  Flex,
+  FlexCollum,
+  Wrap1,
+  Wrap2,
+  Wrap3,
+} from "./CartPage.styled";
 
-import plus from '../../img/+.svg'
-import min from '../../img/-.svg'
-import trash from '../../img/Trash.svg'
-import Header from '../Header';
+import plus from "../../img/+.svg";
+import min from "../../img/-.svg";
+import trash from "../../img/Trash.svg";
+import Header from "../Header";
+import { UserContext } from "../../Context/userContext";
 
-import { useNavigate } from 'react-router';
+const config = {
+  headers: {
+    "Content-Type": "application/json",
+  },
+};
 
-
-let socket;
 const CartPage = () => {
-    const navigate = useNavigate()
-    const [orderStatus,setOrderStatus] = useState(false)
-    const { state, dispatch } = useContext(UserContext)
-    const { user } = state
-    
-    const [total, setTotal] = useState(null)
-    const [order, setOrder] = useState([])
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isHistory = location.key !== "default";
+  const {
+    state: { isUserOrder },
+    dispatch,
+  } = useContext(UserContext);
 
-    const [transaction, setTransaction] = useState(null)
-    const [refresh, setReresh] = useState(false)
-    useEffect(async () => {
-        await API.get('/order/count')
-            .then(res => setTotal(res.data.total))
-            .catch(err => handleError(err))
-        await API.get('/transaction/active')
-            .then(res => {setOrder(res.data.data.transactions[0].product); setTransaction(res.data.data.transactions[0]) })
-            .catch(err => handleError(err))
-    }, [refresh])
-    
-    useEffect(() => {
-        if (transaction?.status === 'Waiting Approve' || transaction?.status === 'On The Way') {
-            setOrderStatus(true)
-        }
-    }, [transaction])
-    
-    const orderDelete = async (x) => {
-        try {
-            if(orderStatus === true) return null
+  const [transaction, setTransaction] = useState(null);
 
-            const res = await API.delete(`/order/${x}`)
+  const [total, setTotal] = useState(null);
+  // Navigate back if there is no orders left in example when delete or minus the order until it left nothing
 
-            setReresh(!refresh)
-        } catch (err) {
-            handleError(err)
-        }
+  const [orders, setOrders] = useState([]);
+  const orderStatus = useMemo(
+    () =>
+      transaction?.status === "Waiting Approve" ||
+      transaction?.status === "On The Way"
+        ? true
+        : false,
+    [transaction?.status]
+  );
+
+  const [refresh, setReresh] = useState(false);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+    (async () => {
+      await API.get("/order/count", { signal })
+        .then((res) => {
+          setTotal(res.data.total);
+
+          if (!res || res.data.total === 0) {
+            // Bring back user to previous history
+            isHistory ? navigate(-1) : navigate("/");
+
+            // Close access to cart page
+            dispatch({ status: "isUserOrder", payload: false });
+          }
+
+          // In case isUserOrder status alredy true we do not need to dispatch
+          if (isUserOrder === true) return;
+        })
+        .catch((err) => handleError(err));
+      await API.get("/transaction/active", { signal })
+        .then((res) => {
+          // Seems DESC by createdAt not working at sequelize, so do it in client
+          res.data.data.transaction.product.sort((a, b) =>
+            a.id <= b.id ? -1 : a.id >= b.id ? 1 : 0
+          );
+
+          setOrders(res.data.data.transaction.product); //orders is contain the product;
+          setTransaction(res.data.data.transaction);
+        })
+        .catch((err) => handleError(err));
+    })();
+    return () => controller.abort();
+  }, [refresh, isHistory, dispatch, navigate, isUserOrder]);
+
+  const orderDelete = async (orderId) => {
+    if (!orderId) return;
+    try {
+      if (orderStatus === true) return null;
+
+      await API.delete(`/order/${orderId}`);
+
+      setReresh(!refresh);
+    } catch (err) {
+      handleError(err);
     }
+  };
 
+  const addHandle = async (productId) => {
+    try {
+      if (orderStatus === true) return null;
 
-    
-    const addHandle = async (x) => {
-        try {
-            if(orderStatus === true) return null
-            const config = {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            }
-            let res = {
-                transactionId: transaction.id,
-                productId: x,
-                qty: 1
-            }
-            res = JSON.stringify(res)
+      const form = {
+        transactionId: transaction.id,
+        products: [
+          {
+            productId,
+            qty: 1,
+          },
+        ],
+      };
 
-            await API.post('/add/order', res, config)
-            setReresh(!refresh)
-        } 
-        catch (err) {
-            handleError(err)
-        }
+      // Post add order this api adjust from transaction table, product table, to delete its order
+      await API.post("/add/order", form, config);
+      setReresh((prev) => !prev);
+    } catch (err) {
+      handleError(err);
     }
-    const lessHandle = async (x) => {
-        try {
-            if(orderStatus === true) return null
-            const config = {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            }
-            let res = {
-                transactionId: transaction.id,
-                productId: x,
-                qty: 1
-            }
-            res = JSON.stringify(res)
-            await API.post('/less/order', res, config)
-            setReresh(!refresh)
-        } 
-        catch (err) {
-            handleError(err)
-        }
-    }
-    return (
-        <>
-            <Header trigger={refresh}/>
-            <Wrapper>
-                <h1>My Chart</h1>
-                <h2>Review Your Order</h2>
-                <WrapOrder>
-                    <div className="over">
-                        <WrapOrder2>
-                            {/* TC~REPEAT */}
-                            {total === 0 ?
-                                navigate(`/`) : null}
-                    {order.map(x =>{
-                        return (
-                            <Flex key={x.id+x.id}>
-                                <Wrap1 >
-                                    <img src={x.img} key={x.img+x.id} />
-                                    <Wrap2>
-                                        <Wrap3>
-                                            <h4>{x.title}</h4>
-                                            <p>{convertRupiah.convert(x.order.qty * x.price)}</p>
-                                        </Wrap3>
-                                        <Wrap3>
-                                            <div>
-                                                <button  onClick={() => { lessHandle(x.id) }}><img src={ min }/></button>
-                                                        <h4 className="pinkBg">{x.order.qty}</h4>
-                                                <button onClick={() => { addHandle(x.id) }}><img src={ plus}/></button>
-                                            </div>
-                                            <button onClick={() => { orderDelete(x.order.id) }}><img src={ trash }/></button>
-                                        </Wrap3>
-                                    </Wrap2>
-                                </Wrap1>
-                            </Flex>
-                        )
-                    })}
-                    </WrapOrder2>
-                    </div>
-                    <FlexCollum>
-                        <tb>
-                            <Wrap3>
-                                <Pp >Subtotal</Pp>
-                                <Pp >{convertRupiah.convert(transaction?.price)}</Pp>
-                            </Wrap3>
-                            <Wrap3>
-                                <Pp>Ongkir</Pp>
-                                <Pp>{convertRupiah.convert(10000)}</Pp>
-                            </Wrap3>
-                            <Wrap3>
-                                <Pp>Qty</Pp>
-                                <Pp>{total}</Pp>
-                            </Wrap3>
-                        </tb>
-                            <Wrap1>
-                                <Pp b>TOTAL</Pp>
-                                <Pp b>{convertRupiah.convert(transaction?.price + 10000)}</Pp>
-                            </Wrap1>
-                    </FlexCollum>
-                </WrapOrder>
-                <Orderbtn>
-                    <Link to='checkout'>
-                        <button >{orderStatus ? 'See Checkout':'Process To Checkout'}</button>
-                    </Link>
-                </Orderbtn>
-            </Wrapper>
-        </>
-    )
-}
+  };
+  const lessHandle = async (productId) => {
+    try {
+      if (orderStatus === true) return null;
 
-export default CartPage
+      const form = {
+        transactionId: transaction.id,
+        products: [
+          {
+            productId,
+            qty: 1,
+          },
+        ],
+      };
+
+      // Post less order this api adjust from transaction table, product table, to delete its order
+      await API.post("/less/order", form, config);
+      setReresh((prev) => !prev);
+    } catch (err) {
+      handleError(err);
+    }
+  };
+
+  return (
+    <>
+      <Header />
+      <Wrapper>
+        <h1>My Chart</h1>
+        <h2>Review Your Order</h2>
+        <WrapOrder>
+          <div className="over">
+            <WrapOrder2>
+              {/* TC~REPEAT */}
+              <tbody>
+                {orders.length > 0 ? (
+                  orders.map((product) => {
+                    return (
+                      <tr key={product.img}>
+                        <Flex>
+                          <Wrap1>
+                            <img
+                              src={product.img.replace(
+                                "q_auto:good",
+                                "q_auto:eco"
+                              )}
+                              key={product.title}
+                              alt="product"
+                            />
+                            <Wrap2>
+                              <Wrap3>
+                                <h4>{product?.title || "loading..."}</h4>
+                                <p>
+                                  {convertRupiah.convert(
+                                    product.order.qty * product.price
+                                  )}
+                                </p>
+                              </Wrap3>
+                              <Wrap3>
+                                <div>
+                                  <button
+                                    onClick={() => {
+                                      lessHandle(product.id);
+                                    }}
+                                  >
+                                    <img src={min} alt="minus" />
+                                  </button>
+                                  <h4 className="pinkBg">
+                                    {product.order.qty}
+                                  </h4>
+                                  <button
+                                    onClick={() => {
+                                      addHandle(product.id);
+                                    }}
+                                  >
+                                    <img src={plus} alt="plust" />
+                                  </button>
+                                </div>
+                                <button
+                                  onClick={() => {
+                                    orderDelete(product?.order?.id);
+                                  }}
+                                >
+                                  <img src={trash} alt="trash" />
+                                </button>
+                              </Wrap3>
+                            </Wrap2>
+                          </Wrap1>
+                        </Flex>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td>
+                      <h2>Loading...</h2>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </WrapOrder2>
+          </div>
+          <FlexCollum>
+            <table>
+              <tbody>
+                <tr>
+                  <td>
+                    <Wrap3>
+                      <Pp>Subtotal</Pp>
+                      <Pp>
+                        {transaction?.price
+                          ? convertRupiah.convert(transaction.price)
+                          : "Loading..."}
+                      </Pp>
+                    </Wrap3>
+                    <Wrap3>
+                      <Pp>Ongkir</Pp>
+                      <Pp>{convertRupiah.convert(10000)}</Pp>
+                    </Wrap3>
+                    <Wrap3>
+                      <Pp>Qty</Pp>
+                      <Pp>{total}</Pp>
+                    </Wrap3>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <Wrap1>
+              <Pp b>TOTAL</Pp>
+              <Pp b>
+                {transaction?.price
+                  ? convertRupiah.convert(transaction.price + 10000)
+                  : "Loading..."}
+              </Pp>
+            </Wrap1>
+          </FlexCollum>
+        </WrapOrder>
+        <Orderbtn>
+          <Link to="checkout">
+            <button>
+              {orderStatus ? "See Checkout" : "Process To Checkout"}
+            </button>
+          </Link>
+        </Orderbtn>
+      </Wrapper>
+    </>
+  );
+};
+
+export default CartPage;

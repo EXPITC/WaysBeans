@@ -1,266 +1,372 @@
-import { React, useEffect, useState ,useContext} from 'react';
-import { API ,handleError} from '../../config/api';
-import Header from '../Header';
-import convertRupiah from 'rupiah-format'
-import { Wrapper,Product ,DetailProduct ,InputT ,InputS, InputD, InputP ,Inline} from './DetailPage.styled'
-import { useParams } from 'react-router';
-import { UserContext } from '../../Context/userContext';
-// import the Rating
-import Rating from './Rating'
+import { React, useEffect, useState, useContext, useMemo, useRef } from "react";
+import { API, handleError } from "../../config/api";
+import Header from "../Header";
+import convertRupiah from "rupiah-format";
+import {
+  Wrapper,
+  Product,
+  DetailProduct,
+  InputT,
+  InputS,
+  InputD,
+  InputP,
+  Inline,
+} from "./DetailPage.styled";
+import { useParams } from "react-router";
+import { UserContext } from "../../Context/userContext";
+// Components
+import Rating from "./Rating";
 
+const TITLE = "title";
+const STOCK = "stock";
+const DESCRIPTION = "description";
+const PRICE = "price";
+const IMG = "img";
+const DEFAULT = "";
 
 const DetailPage = () => {
-    const { id } = useParams()
-    const { state } = useContext(UserContext);
-    const { user } = state
-    let isOwner = false
-    if (user?.role === 'owner') {
-      isOwner = true
-    }
-    const [data, setData] = useState({
-        title: '',
-        stock: '',
-        description: '',
-        price: '',
-        img: '',
-        prev: ''
-    })
-   
-    const [product, setProduct] = useState([])
-    const [form, setForm] = useState({})
-    const [trigHead, setTrigHead] = useState(false)
-    const [titleV, setTitleV] = useState(false)
-    const [stockV, setStockV] = useState(false)
-    const [descriptionV, setDescriptionV] = useState(false)
-    const [priceV, setPriceV] = useState(false)
-    const [imgV, setImgV] = useState(false)
+  const { id } = useParams();
+  const { state } = useContext(UserContext);
+  const { user } = state;
+  const isOwner = useMemo(
+    () => (user?.role === "owner" ? true : false),
+    [user?.role]
+  );
+  const globalController = new AbortController();
 
-    const getProduct = async () => {
-        await API.get(`/product/${id}` )
-            .then((res) => {setProduct(res.data.data[0]) })
-            .catch((err) => { handleError(err) })
-        setTrigHead(!trigHead)
-    }
-    useEffect(() => {
-        getProduct()
-    }, [])
-    useEffect(() => {
-        setData({
-            title: product.title,
-            stock:  product.stock,
-            description:  product.description,
-            price: product.price,
-            prev: product.img
+  const [editProduct, setEditProduct] = useState({
+    title: "",
+    stock: "",
+    description: "",
+    price: "",
+    img: "",
+    prevImg: "",
+  });
+
+  const [product, setProduct] = useState();
+  const [isRefresh, setRefresh] = useState(false);
+  const [isLoading, setLoading] = useState(false);
+
+  const [isEdit, setEdit] = useState(DEFAULT);
+  const [isUpdate, setUpdate] = useState(DEFAULT);
+
+  const inputRef = useRef(null);
+  useEffect(() => {
+    if (inputRef.current) inputRef.current.focus();
+    if (isEdit === IMG && inputRef.current) inputRef.current?.click();
+  }, [isEdit]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+    (async () => {
+      await API.get(`/product/${id}`, { signal })
+        .then((res) => {
+          setProduct({
+            ...res.data.data,
+            img: res.data.data.img.replace("/q_auto:good", ""),
+          });
+          if (!isOwner) return;
+          const resProduct = { ...res.data.data };
+          delete resProduct.id;
+          delete resProduct.seller;
+          setEditProduct({
+            ...resProduct,
+            prevImg: resProduct.img.replace("/q_auto:good", ""),
+          });
         })
-        
-    }, [product])
+        .catch((err) => {
+          handleError(err);
+        });
+    })();
 
-    const handelData = (state, x) => {
-        
-        switch (state) {
-            case 'title': {
-                return setData({
-                    ...data,
-                    title: x
-                })
-            }
-            case 'stock': {
-                return setData({
-                    ...data,
-                    stock: x
-                })
-            }
-            case 'description': {
-                return setData({
-                    ...data,
-                    description: x
-                })
-            }
-            case 'price': {
-                return setData({
-                    ...data,
-                    price: x
-                })
-            }
-        }
-    }
-    const upload = async (state) => {
-     
-        const config = {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }
-        const config2 = {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        }
-        switch (state) {
-            case 'title':
-                await API.patch(`/product/${id}`, { title: data.title }, config)
-                    .then(res => console.log(res))
-                    .catch(err => handleError(err))
-                getProduct()
-                break;
-            case 'stock':
-                await API.patch(`/product/${id}`, { stock: data.stock }, config)
-                    .then(res => console.log(res))
-                    .catch(err => handleError(err))
-                getProduct()
-                break;
-            case 'description':
-                await API.patch(`/product/${id}`, { description: data.description }, config)
-                    .then(res => console.log(res))
-                    .catch(err => handleError(err))
-                getProduct()
-                break;
-            case 'price':
-                await API.patch(`/product/${id}`, { price: data.price }, config)
-                    .then(res => console.log(res))
-                    .catch(err => handleError(err))
-                getProduct()
-                break;
-            case 'img':
-                const formData = new FormData();
-                formData.set('image', data.img, data.img.name);
-                await API.patch(`/productImg/${id}`, formData, config2)
-                    .then(res => console.log(res))
-                    .catch(err => handleError(err))
-                getProduct()
-                setImgV(false)
-                break;
-        }
-       
-   }
-    const enterHandle = async(state, e) => {
-        if (e.code === "Enter" || e.code === "NumpadEnter") {
-            switch (state) {
-                case 'title':
-                    upload('title')
-                    setTitleV(false)
-                    break;
-                case 'stock': {
-                    upload('stock')
-                    setStockV(false)
-                    break;
-                }
-                case 'description': {
-                    upload('description')
-                    setDescriptionV(false)
-                    break;
-                }
-                case 'price': {
-                    upload('price')
-                    setPriceV(false)
-                    break;
-                }
-            }
-        }
-   }
-    const [f, setF] = useState(false)
-    useEffect(() => {
-        if (f) {
-            order()
-        } else {
-            setF(true)
-        }
-    },[form])
-    const order = async () => {
-        try {
-            const config = {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            }
+    return () => controller.abort();
+  }, [id, isRefresh, isOwner]);
 
+  // For admin edit their product
 
-        let res = await API.post('/add/transaction', form, config)
-        if(res.status === 201) {
+  const handleChange = (e) => {
+    if (e.target.name === IMG)
+      return setEditProduct((prev) => ({
+        ...prev,
+        img: e.target.file[0],
+        prevImg: URL.createObjectURL(e.target.file[0]),
+      }));
+    setEditProduct((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
 
-            res = {
-                transactionId: res.data.thenTransaction.id,
-                ...form.product[0],
-            }
+  const upload = async (e, isPass = false) => {
+    if ((!isPass && isUpdate === DEFAULT) || !e.target?.name) return;
 
-            res = JSON.stringify(res)
-            await API.post('/add/order', res, config)
-        }
-        getProduct()
-        } catch (err) {
-            getProduct()
-            handleError(err)
-        }
-    }
+    setLoading(true);
+    const signal = globalController.signal;
+    const configJSON = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      signal,
+    };
+    const configMultipart = {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      signal,
+    };
 
-    const handleOrder = (x) => {
-        setForm({
-            sellerId : x,
-            product: [
-                {
-                    productId: product.id,
-                    qty: 1
-                }
-            ]
+    const updateProduct = async (newProductData, config = configJSON) =>
+      await API.patch(`/product/${id}`, newProductData, config)
+        .then(() => {
+          setProduct((prev) => ({ ...prev, ...newProductData }));
+          setEdit(DEFAULT);
+          setUpdate(DEFAULT);
+          isLoading(false);
         })
-    }
+        .catch((err) => {
+          handleError(err);
+          setEdit(DEFAULT);
+          setUpdate(DEFAULT);
+          setLoading(false);
+        });
 
-    const handleImg = (e) => {
-        setData({
-            ...data,
-            img: e.target.files[0],
-            prev: URL.createObjectURL(e.target.files[0])
-        })
-        console.log('what?')
-        setImgV(true)
+    switch (e.target.name || isUpdate) {
+      case TITLE:
+        updateProduct({ title: editProduct });
+        break;
+      case STOCK:
+        updateProduct({ stock: editProduct.stock });
+        break;
+      case DESCRIPTION:
+        updateProduct({ description: editProduct.description });
+        break;
+      case PRICE:
+        updateProduct({ price: editProduct.price });
+        break;
+      case IMG:
+        const formData = new FormData();
+        formData.set("image", editProduct.img, editProduct.img.name);
+        updateProduct(formData, configMultipart);
+        break;
+      default:
+        return setEdit(DEFAULT);
     }
-    const uploadImg = () => {
-        upload('img')
-    }
-    const cancelImg = () => {
-        setData({
-            ...data,
-            prev: product.img
-        })
-        setImgV(false)
-    }
-    // check if costumer then fect the token for review/rating
+  };
 
-    return (
-        <>
-            <Header trigger={trigHead} />
-            <Wrapper>
-                {isOwner ?
-                    <label htmlFor='img'>
-                        <Product src={data.prev} alt={product.title} />
-                        <input type='file' id='img' onChange={handleImg} hidden />
-                    </label> :
-                    <>
-                    <Product src={data.prev} alt={product.title} />
-                    </>}
-                <DetailProduct h>
-                    {isOwner ?
-                        <>
-                            {titleV ? <InputT value={data.title} onChange={(e) => { handelData('title', e.target.value) }} onKeyDown={(e)=> {enterHandle('title',e)}}/>: <h1 onClick={()=>setTitleV(!titleV)}>{product.title}</h1>}
-                            {stockV ? <Inline><h3>Stock:</h3><InputS value={data.stock} onChange={(e) => { handelData('stock', e.target.value) }}  onKeyDown={(e)=> {enterHandle('stock',e)}} /></Inline> : <h3 onClick={()=>setStockV(!stockV)}>Stock: {product.stock}</h3>}
-                            {descriptionV ? <InputD value={data.description} onChange={(e) => { handelData('description', e.target.value) }}  onKeyDown={(e)=> {enterHandle('description',e)}}/> : <p onClick={()=>setDescriptionV(!descriptionV)}>{product.description}</p>}
-                            {priceV ? <InputP value={data.price} onChange={(e) => { handelData('price', e.target.value) }} onKeyDown={(e) => { enterHandle('price', e) }} /> : <h2 onClick={() => setPriceV(!priceV)}>{convertRupiah.convert(product.price)}</h2>}
-                            {imgV ? <> <button onClick={uploadImg}>Update Product Pict</button> <button onClick={cancelImg}>Cancel</button></>: null}
-                        </>
-                    :
-                    <>
-                    <h1>{product.title}</h1>
-                    <h3>Stock: {product.stock}</h3>
-                    <p>{product.description}</p>
-                    <h2>{convertRupiah.convert(product.price)}</h2>
-                    <button onClick={()=> handleOrder(product.seller.id)}>Add Cart</button>
-                    </>
-                    }
-                </DetailProduct>
-                <Rating id={id}/>
-            </Wrapper>
-        </>
-    )
-}
+  const handleEnter = async (e) => {
+    if (e.code === "Enter" || e.code === "NumpadEnter") {
+      upload(e, true);
+      setEdit(DEFAULT);
+    }
+  };
 
-export default DetailPage
+  const handleBlur = (e) => {
+    if (product[e.target.name] !== editProduct[e.target.name]) {
+      setUpdate(e.target.name);
+      setEdit(DEFAULT);
+      return;
+    }
+    setEdit(DEFAULT);
+  };
+
+  const handleImg = (e) => {
+    setEditProduct((prev) => ({
+      ...prev,
+      img: e.target.files[0],
+      prevImg: URL.createObjectURL(e.target.files[0]),
+    }));
+    setUpdate(IMG);
+  };
+
+  const handleCancelEdit = () => {
+    globalController.abort();
+    const resProduct = { ...product };
+    delete resProduct.id;
+    delete resProduct.seller;
+
+    setEditProduct({
+      ...resProduct,
+      prevImg: product.img,
+    });
+    setEdit(DEFAULT);
+    setUpdate(DEFAULT);
+    setLoading(false);
+  };
+
+  // For client order product
+
+  const handleOrder = async (sellerId) => {
+    if (isLoading) return;
+
+    if (!sellerId) return console.error("can't get seller id from product");
+    if (!product.id) return console.error("No product id found");
+
+    try {
+      setLoading(true);
+      const form = {
+        sellerId,
+        products: [
+          {
+            productId: product.id,
+            qty: 1,
+          },
+        ],
+      };
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+
+      // Create transaction if there is no current transaction
+      let transaction = await API.post("/add/transaction", form, config);
+
+      // If transaction already created then just add to order api
+      if (transaction.status === 201) {
+        transaction = {
+          products: form.products,
+          transactionId: transaction.data.activeTransaction.id,
+        };
+
+        // transaction = JSON.stringify(transaction);
+        // Add new order to the transaction
+        await API.post("/add/order", transaction, config);
+      }
+      setLoading(false);
+      setRefresh((prev) => !prev);
+    } catch (err) {
+      setLoading(false);
+      handleError(err);
+    }
+  };
+
+  return (
+    <>
+      <Header refresh={isRefresh} isTroll={true} />
+      <Wrapper>
+        {isOwner &&
+        isEdit === IMG &&
+        (isUpdate === DEFAULT || isUpdate === IMG) ? (
+          <label htmlFor={IMG}>
+            <Product src={editProduct.prevImg} alt={product?.title} />
+            <input
+              ref={inputRef}
+              type="file"
+              name={IMG}
+              id={IMG}
+              onChange={handleImg}
+              hidden
+            />
+          </label>
+        ) : (
+          <>
+            <Product
+              src={isOwner ? editProduct.prevImg : product?.img}
+              onClick={() => setEdit(IMG)}
+              alt={product?.title}
+            />
+          </>
+        )}
+        <DetailProduct h noPointer={!isOwner}>
+          {isOwner ? (
+            <>
+              {isEdit === TITLE &&
+              (isUpdate === DEFAULT || isUpdate === TITLE) ? (
+                <InputT
+                  ref={inputRef}
+                  name={TITLE}
+                  onBlur={handleBlur}
+                  value={editProduct.title}
+                  onChange={handleChange}
+                  onKeyDown={handleEnter}
+                />
+              ) : (
+                <h1 onClick={() => setEdit(TITLE)}>{editProduct?.title}</h1>
+              )}
+              {isEdit === STOCK &&
+              (isUpdate === DEFAULT || isUpdate === STOCK) ? (
+                <Inline>
+                  <h3>Stock:</h3>
+                  <InputS
+                    ref={inputRef}
+                    onBlur={handleBlur}
+                    type="number"
+                    name={STOCK}
+                    value={editProduct.stock}
+                    onChange={handleChange}
+                    onKeyDown={handleEnter}
+                  />
+                </Inline>
+              ) : (
+                <h3 onClick={() => setEdit(STOCK)}>
+                  Stock: {editProduct?.stock}
+                </h3>
+              )}
+              {isEdit === DESCRIPTION &&
+              (isUpdate === DEFAULT || isUpdate === DESCRIPTION) ? (
+                <InputD
+                  ref={inputRef}
+                  name={DESCRIPTION}
+                  onBlur={handleBlur}
+                  value={editProduct.description}
+                  onChange={handleChange}
+                  onKeyDown={handleEnter}
+                />
+              ) : (
+                <p onClick={() => setEdit(DESCRIPTION)}>
+                  {editProduct?.description}
+                </p>
+              )}
+              {isEdit === PRICE &&
+              (isUpdate === PRICE || isUpdate === DEFAULT) ? (
+                <InputP
+                  ref={inputRef}
+                  onBlur={handleBlur}
+                  value={editProduct.price}
+                  name={PRICE}
+                  type="number"
+                  onChange={handleChange}
+                  onKeyDown={handleEnter}
+                />
+              ) : (
+                <h2 onClick={() => setEdit(PRICE)}>
+                  {convertRupiah.convert(editProduct?.price)}
+                </h2>
+              )}
+              {isUpdate !== DEFAULT && (
+                <>
+                  <button name={isUpdate} onClick={isLoading ? null : upload}>
+                    {isLoading
+                      ? "Loading..."
+                      : `Update Product ${
+                          isUpdate.charAt(0).toUpperCase() + isUpdate.slice(1)
+                        }`}
+                  </button>
+                  {!isLoading && (
+                    <button onClick={handleCancelEdit}>Cancel</button>
+                  )}
+                </>
+              )}
+            </>
+          ) : (
+            // Customer
+            <>
+              <h1>{product?.title}</h1>
+              <h3>Stock: {product?.stock}</h3>
+              <p>{product?.description}</p>
+              <h2>{convertRupiah.convert(product?.price)}</h2>
+              <button onClick={() => handleOrder(product.seller?.id)}>
+                {isLoading ? "Loading..." : "Add Cart"}
+              </button>
+            </>
+          )}
+        </DetailProduct>
+        <Rating id={id} />
+      </Wrapper>
+    </>
+  );
+};
+
+export default DetailPage;
