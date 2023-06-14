@@ -35,10 +35,10 @@ const DetailPage = () => {
   const globalController = new AbortController();
 
   const [editProduct, setEditProduct] = useState({
-    title: "",
-    stock: "",
-    description: "",
-    price: "",
+    title: "Load title...",
+    stock: 0,
+    description: "Load description...",
+    price: 0,
     img: "",
     prevImg: "",
   });
@@ -353,10 +353,10 @@ const DetailPage = () => {
           ) : (
             // Customer
             <>
-              <h1>{product?.title}</h1>
-              <h3>Stock: {product?.stock}</h3>
-              <p>{product?.description}</p>
-              <h2>{convertRupiah.convert(product?.price)}</h2>
+              <h1>{product?.title || "Load product..."}</h1>
+              <h3>Stock: {product?.stock || 0}</h3>
+              <p>{product?.description || "Load description..."}</p>
+              <h2>{convertRupiah.convert(product?.price || 0)}</h2>
               <button onClick={() => handleOrder(product.seller?.id)}>
                 {isLoading ? "Loading..." : "Add Cart"}
               </button>
