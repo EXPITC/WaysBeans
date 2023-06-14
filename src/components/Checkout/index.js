@@ -277,7 +277,7 @@ const CheckoutPage = () => {
               onChange={(e) => {
                 // prevent negative number and set limit 4 digit
                 e.target.value =
-                  Math.abs(e.target.value) >= 0
+                  e.target.value > 0
                     ? Math.abs(e.target.value.slice(0, 13))
                     : undefined;
 
@@ -302,7 +302,7 @@ const CheckoutPage = () => {
               onChange={(e) => {
                 // prevent negative number and set limit 4 digit
                 e.target.value =
-                  Math.abs(e.target.value) >= 0
+                  e.target.value > -1
                     ? Math.abs(e.target.value.slice(0, 4))
                     : undefined;
                 handleChange(e);
