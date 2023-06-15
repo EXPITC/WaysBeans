@@ -53,7 +53,7 @@ const RouterSetup = () => {
           })
         )
         .catch((err) => {
-          dispatch({ status: "logout" });
+          dispatch({ status: "isLogin", payload: false });
           handleError(err);
         });
       if (!isLogin) return;
@@ -75,6 +75,7 @@ const RouterSetup = () => {
     return () => controller.abort();
   }, [dispatch, isLogin]);
 
+  // Info
   useEffect(() => {
     if (isLogin === null) return;
     if (!isLogin) {
@@ -101,6 +102,7 @@ const RouterSetup = () => {
       },
     ]);
   }, [isLogin]);
+
   return (
     <Router>
       <Routes>

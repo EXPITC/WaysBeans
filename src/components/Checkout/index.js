@@ -271,16 +271,15 @@ const CheckoutPage = () => {
             />
             <input
               required
-              type="number"
+              type="tel"
               name="phone"
+              pattern="[0-9]{4}-[0-9]{4}-[0-9]{4}"
               placeholder="Phone"
               onChange={(e) => {
-                // prevent negative number and set limit 4 digit
-                e.target.value =
-                  e.target.value > 0
-                    ? Math.abs(e.target.value.slice(0, 13))
-                    : undefined;
+                let regex =
+                  /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/;
 
+                e.target.value = e.target.value.replace(regex, "");
                 handleChange(e);
               }}
               value={form.phone}
