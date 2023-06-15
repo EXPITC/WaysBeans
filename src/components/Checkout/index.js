@@ -18,6 +18,7 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import convertStamp from "../../utils/convertStamp";
 import useSocket from "../../config/socket";
+import Joi from "joi";
 
 const WAITING_APPROVE = "Waiting Approve";
 const DEFAULT_FORM = {
@@ -150,12 +151,32 @@ const CheckoutPage = () => {
 
     if (isLoading) return;
 
-    // Make sure form not empty
-    for (const property in form) {
-      if (form[property] === "") return;
-    }
+    // Validate
+    const schema = Joi.object({
+      name: Joi.string().min(3).max(30).required(),
+      email: Joi.string()
+        .email({ minDomainSegments: 2, tlds: { allow: false } })
+        .required(),
+      phone: Joi.string()
+        .min(12)
+        .pattern(
+          new RegExp("^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$")
+        )
+        .required()
+        .messages({
+          "string.base": `"phone" should be a type of 'text'`,
+          "string.empty": `"phone" cannot be an empty field`,
+          "string.min": `"phone" should have a minimum length of {#limit}`,
+          "string.pattern.base": `{#value} is not valid phone number`,
+          "any.required": `"phone" is a required field`,
+        }),
+      address: Joi.string().min(3).required(),
+      postcode: Joi.string().min(4).required(),
+    });
 
     try {
+      await schema.validateAsync(form);
+
       setLoading(true);
       e.preventDefault();
       const config = {
@@ -273,13 +294,12 @@ const CheckoutPage = () => {
               required
               type="tel"
               name="phone"
-              pattern="[0-9]{4}-[0-9]{4}-[0-9]{4}"
+              pattern="^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$"
               placeholder="Phone"
               onChange={(e) => {
-                let regex =
-                  /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/;
-
-                e.target.value = e.target.value.replace(regex, "");
+                const regex = /^[+]?[0-9]{0,13}$/g;
+                if (!e.target.value) return handleChange(e);
+                if (!e.target.value.match(regex)) return;
                 handleChange(e);
               }}
               value={form.phone}
@@ -295,15 +315,15 @@ const CheckoutPage = () => {
             <input
               required
               className="postcode"
-              type="number"
+              type="tel"
               name="postcode"
               placeholder="Post Code"
               onChange={(e) => {
                 // prevent negative number and set limit 4 digit
-                e.target.value =
-                  e.target.value > -1
-                    ? Math.abs(e.target.value.slice(0, 4))
-                    : undefined;
+                const regex = /[0-9]$/g;
+                if (!e.target.value) return handleChange(e);
+                if (e.target.value < 0 || !e.target.value.match(regex)) return;
+                e.target.value = e.target.value.slice(0, 5);
                 handleChange(e);
               }}
               value={form.postcode}

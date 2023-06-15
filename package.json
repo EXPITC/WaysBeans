@@ -8,6 +8,7 @@
     "@testing-library/user-event": "^12.8.3",
     "axios": "^0.24.0",
     "cors": "^2.8.5",
+    "joi": "^17.9.2",
     "jsonwebtoken": "^8.5.1",
     "qrcode": "^1.5.0",
     "react": "^17.0.2",
