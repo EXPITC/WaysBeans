@@ -89,6 +89,10 @@ const RouterSetup = () => {
       "%c* You can always open console log for more detail/info in all my project, thankyou.",
       "color: #F6E6DA"
     );
+    console.warn(
+      "%c *Please understand almost all of my projects use free tier server for backend. This means that some heavy lifting processes may take time to process or build due to free tier limitations, also almost free tiers need to be 'fired' first after not waking up within the allotted time, so I'm sorry if you've ever experienced a cold start. Thank you, for reading & understanding. \n tips: you can just keep refreshing the page or waiting patiently. Recommended the second option because its actually already hit the server just takes times to process due to cold start or free tier limitations.",
+      "background-color: #F6E6DA; color: #613d2b; font-weight: 600; font-size: normal; text-align: left; overflow: hidden; border-radius: 2px; padding-left:10px; padding-top: 10px; padding-bottom:10px;"
+    );
 
     if (isLogin) return; //I know this redundant if but i want the position still print consecutive;
     console.table([
