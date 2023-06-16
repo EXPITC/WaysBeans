@@ -27,7 +27,5 @@ export const handleError = (err) => {
   } else if (err.request) {
     console.error(err.request);
     if (err.message) console.error(err.massage);
-  } else {
-    alert(err);
   }
 };

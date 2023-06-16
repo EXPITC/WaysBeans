@@ -174,9 +174,10 @@ const CheckoutPage = () => {
       postcode: Joi.string().min(4).required(),
     });
 
-    try {
-      await schema.validateAsync(form);
+    const isValid = schema.validate(form);
+    if (isValid.error) return alert(isValid.error);
 
+    try {
       setLoading(true);
       e.preventDefault();
       const config = {
