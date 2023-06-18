@@ -87,6 +87,7 @@ export const Comments = styled.div`
   border-right: 3px solid #613d2b;
   h4 {
     margin: 0;
+    max-width: 550px;
     font-family: "Helvetica Neue", Helvetica;
     font-weight: bold;
     font-size: 14px;
